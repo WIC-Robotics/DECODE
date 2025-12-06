@@ -4,10 +4,11 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 
+import androidx.annotation.NonNull;
+
 import org.firstinspires.ftc.teamcode.R;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ public class ConfMgr {
     public static final String TEST_DEVICE_SERIAL = "8bd3b0c7306629af";
     public static final String CRAB_SERIAL = "4828169831438180";
     public static final String FLYING_FISH_SERIAL = "441bdb8edc88d384";
+    public static final String GLOBAL_DEFAULT_SERIAL = "0";
 
     static Map<String, String> robotName = new HashMap<>();
 
@@ -28,7 +30,7 @@ public class ConfMgr {
         robotName.put(TEST_DEVICE_SERIAL, "TestDevice");
         robotName.put(CRAB_SERIAL, "Crab");
         robotName.put(FLYING_FISH_SERIAL, "Flyingfish");
-        robotName.put("0", "GlobalDefault");
+        robotName.put(GLOBAL_DEFAULT_SERIAL, "GlobalDefault");
     }
     private final Map<String, String> settings = new HashMap<>();
 
@@ -46,10 +48,11 @@ public class ConfMgr {
 
         if (!wicFolder.exists()){
             System.out.println("creating "+wicFolder);
-            boolean made = wicFolder.mkdir();
-            System.out.println("new folder was "+(made ? "" : "not ")+"created.");
+            boolean created = wicFolder.mkdir();
+            System.out.println("new folder was "+(created ? "" : "not ") + "created.");
         }
         if (!confFile.exists()){
+            //Pick the appropriate (or global default) settings file.
             switch (serial){
                 case TEST_DEVICE_SERIAL:
                     System.out.println("Device is TestDevice");
@@ -67,6 +70,7 @@ public class ConfMgr {
                     System.out.println("UNKNOWN DEVICE! Loading GLOBAL defaults");
                     internalSettingsFileId = R.raw.conf0;
             }
+            //and export it
             System.out.println("copying internal file ["+ internalSettingsFileId+"] into ["+ confFile+"]");
             createDefaultConfigFile(confFile, context, internalSettingsFileId);
         }
@@ -89,8 +93,7 @@ public class ConfMgr {
     }
 
     private void createDefaultConfigFile(File externalConfFile, Context context, int resourceId){
-
-        try {
+         try {
             try (InputStream is = context.getResources().openRawResource(resourceId)) {
                 try (FileOutputStream fileOutputStream = new FileOutputStream(externalConfFile)) {
                     while (is.available() > 0) {
@@ -124,10 +127,10 @@ public class ConfMgr {
     public String get(String key){
         return settings.get(key);
     }
-    public <T> String get(Class<T>cls, String key){
+    public <T> String get(@NonNull Class<T>cls, String key){
         return get(cls.getSimpleName()+"."+key);
     }
-    public String get(Object o, String key){
+    public String get(@NonNull Object o, String key){
         return get(o.getClass(), key);
     }
     public double getDouble(String key){
@@ -143,24 +146,10 @@ public class ConfMgr {
         }
         return Double.parseDouble(val);
     }
-    public <T> double getDouble(Class<T>cls, String key){
+    public <T> double getDouble(@NonNull Class<T>cls, String key){
         return getDouble(cls.getSimpleName()+"."+key);
     }
-    public double getDouble(Object o, String key){
+    public double getDouble(@NonNull Object o, String key){
         return getDouble(o.getClass(), key);
     }
-
-
 }
-
-//class AppContextProvider {
-//    private static Context appContext;
-//
-//    public static Context getAppContext() {
-//        return appContext;
-//    }
-//
-//    public static void setAppContext(Context appContext) {
-//        AppContextProvider.appContext = appContext;
-//    }
-//}
