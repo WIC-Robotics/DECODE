@@ -5,8 +5,10 @@ import android.os.SystemClock;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.WIC.util.AppContextProvider;
 import org.firstinspires.ftc.teamcode.WIC.util.AprilTagDetectionListener;
 import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.CameraMgr;
+import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ public class Midbrain implements AprilTagDetectionListener {
 
 //    ShootingMgr shootingMgr;
 
+    private ConfMgr confMgr;
+
     private CameraMgr cameraMgr;
 
     private long startTime = 0;
@@ -25,6 +29,9 @@ public class Midbrain implements AprilTagDetectionListener {
     public Midbrain(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
         this.telemetry = telemetry;
+
+        AppContextProvider.setAppContext(this.hardwareMap.appContext);
+        this.confMgr = ConfMgr.getInstance();
 
         this.cameraMgr = new CameraMgr(this.hardwareMap, this);
 //        this.shootingMgr = new ShootingMgr(this.hardwareMap);
