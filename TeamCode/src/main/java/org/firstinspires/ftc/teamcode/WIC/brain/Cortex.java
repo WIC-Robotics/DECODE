@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.WIC.brain;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 

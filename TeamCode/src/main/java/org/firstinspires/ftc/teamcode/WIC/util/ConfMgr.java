@@ -17,6 +17,10 @@ import java.util.Map;
 import java.util.Scanner;
 
 
+/**
+ * It is assumed that the distance unit used everywhere is the INCH. If you find anything else,
+ * please change it and raise a flag.
+ */
 public class ConfMgr {
     static private ConfMgr instance = null;
     public static final String TEST_DEVICE_SERIAL = "8bd3b0c7306629af";
@@ -80,7 +84,7 @@ public class ConfMgr {
             fillSettings(scanner);
             scanner.close();
         } catch (Exception e) {
-            System.out.println("could not create & write to config file because of exception");
+            System.out.println("could not read config file because of exception");
             throw new RuntimeException(e);
         }
     }
