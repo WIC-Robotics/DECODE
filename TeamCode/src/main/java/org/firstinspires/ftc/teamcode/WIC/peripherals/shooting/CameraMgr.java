@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.WIC.peripherals.shooting;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -21,8 +23,6 @@ public class CameraMgr {
     VisionPortal visionPortal;
     AprilTagProcessor aprilTagProcessor;
 
-    HardwareMap hardwareMap;
-
     private final String WEBCAM_NAME = "Webcam 1";
     CameraName CAMERA;
 //    BuiltinCameraDirection CAMERA = BuiltinCameraDirection.BACK;
@@ -32,41 +32,64 @@ public class CameraMgr {
     private AprilTagDetectionListener aprilTagDetectionListener = null;
 
     public CameraMgr(HardwareMap hardwareMap, AprilTagDetectionListener aprilTagDetectionListener) {
-        this.hardwareMap = hardwareMap;
         this.aprilTagDetectionListener = aprilTagDetectionListener;
 
         this.aprilTagProcessor = buildAprilTagProcessor(true, true, true,
                 AprilTagProcessor.TagFamily.TAG_36h11, AprilTagGameDatabase.getCurrentGameTagLibrary(),
-                DistanceUnit.INCH, AngleUnit.DEGREES, 578.272, 578.272, 402.145, 221.506);
+                DistanceUnit.INCH, AngleUnit.DEGREES);
         this.aprilTagProcessor.setDecimation(2);
 
-        CAMERA = this.hardwareMap.get(WebcamName.class, WEBCAM_NAME);
-        this.visionPortal = buildVisionPortal(CAMERA, this.aprilTagProcessor);
-//        this.visionPortal = buildVP(BuiltinCameraDirection.BACK, this.aprilTagProcessor); // Use if phone camera
+        CAMERA = hardwareMap.get(WebcamName.class, WEBCAM_NAME);
+        this.visionPortal = buildVisionPortal(CAMERA, this.aprilTagProcessor, 640, 480);
+//        this.visionPortal = buildVisionPortal(BuiltinCameraDirection.BACK, this.aprilTagProcessor); // Use if phone camera
 
         cameraThread = new CameraThread();
     }
 
-    private VisionPortal buildVisionPortal(CameraName camera, AprilTagProcessor aprilTagProcessor) {
+
+    private VisionPortal buildVisionPortal(CameraName camera, AprilTagProcessor aprilTagProcessor,
+                                           int width, int height) {
         VisionPortal.Builder VPBuilder = new VisionPortal.Builder()
 
                 .setCamera(camera)
-                .addProcessors(aprilTagProcessor);
+                .addProcessors(aprilTagProcessor)
+//                .setCameraResolution(new Size(width, height))
+                ;
 
         return VPBuilder.build();
     }
 
     private VisionPortal buildVisionPortal(BuiltinCameraDirection camera, AprilTagProcessor aprilTagProcessor) {
-        VisionPortal.Builder VPBuilder = new VisionPortal.Builder();
-        VPBuilder.setCamera(camera);
-        VPBuilder.addProcessors(aprilTagProcessor);
-        return VPBuilder.build();
+            VisionPortal.Builder VPBuilder = new VisionPortal.Builder()
+
+                    .setCamera(camera)
+                    .addProcessors(aprilTagProcessor)
+                    ;
+
+            return VPBuilder.build();
     }
 
+    private AprilTagProcessor buildAprilTagProcessor(
+            boolean drawAxes, boolean drawCube, boolean drawTagOutline,
+            AprilTagProcessor.TagFamily tagFamily, AprilTagLibrary tagLibrary,
+            DistanceUnit distanceUnit, AngleUnit angleUnit) {
+        AprilTagProcessor.Builder aTPBuilder = new AprilTagProcessor.Builder()
+                .setDrawAxes(drawAxes)
+                .setDrawCubeProjection(drawCube)
+                .setDrawTagOutline(drawTagOutline)
+                .setTagFamily(tagFamily)
+                .setTagLibrary(tagLibrary)
+                .setOutputUnits(distanceUnit, angleUnit)
+                ;
+        return aTPBuilder.build();
+    }
 
-    private AprilTagProcessor buildAprilTagProcessor(boolean drawAxes, boolean drawCube, boolean drawTagOutline, AprilTagProcessor.TagFamily tagFamily, AprilTagLibrary tagLibrary, DistanceUnit distanceUnit, AngleUnit angleUnit, double fx, double fy, double cx, double cy) {
+    private AprilTagProcessor buildAprilTagProcessor(
+            boolean drawAxes, boolean drawCube, boolean drawTagOutline,
+            AprilTagProcessor.TagFamily tagFamily, AprilTagLibrary tagLibrary,
+            DistanceUnit distanceUnit, AngleUnit angleUnit,
+            double fx, double fy, double cx, double cy) {
         AprilTagProcessor.Builder ATPBuilder = new AprilTagProcessor.Builder()
-
                 .setDrawAxes(drawAxes)
                 .setDrawCubeProjection(drawCube)
                 .setDrawTagOutline(drawTagOutline)
@@ -74,10 +97,8 @@ public class CameraMgr {
                 .setTagLibrary(tagLibrary)
                 .setOutputUnits(distanceUnit, angleUnit)
                 .setLensIntrinsics(fx, fy, cx, cy)
-        ;
-
+                ;
         return ATPBuilder.build();
-//        return AprilTagProcessor.easyCreateWithDefaults();
     }
 
     public void startStreaming() {
