@@ -69,12 +69,12 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
     @Override
     public void aprilTagDetectionsFound(ArrayList<AprilTagDetection> aprilTagDetections) {
-//        if (aprilTagDetections == null) {
-//            telemetry.clearAll();
-//            telemetry.addLine("NO DETECTIONS at "+ (System.currentTimeMillis() - startTime)/1000 );
-//            return;
-//        }
-//
+        if (aprilTagDetections == null) {
+            outputHandler.clearAll();
+            outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.TEXT, "NO DETECTIONS at "+ (System.currentTimeMillis() - startTime)/1000 );
+            return;
+        }
+
 //        telemetry.addLine("# AprilTags Detected " + aprilTagDetections.size() + " at " + SystemClock.currentThreadTimeMillis()/1000);
 //
 //        for (AprilTagDetection detection : aprilTagDetections) {
