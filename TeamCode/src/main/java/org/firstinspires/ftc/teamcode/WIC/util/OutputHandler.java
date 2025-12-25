@@ -22,6 +22,8 @@ public class OutputHandler {
         }
     }
 
+
+
     private void write(String message) {
         telemetry.addLine(message);
     }
@@ -31,6 +33,10 @@ public class OutputHandler {
     }
     private void error(String message) {
         telemetry.addLine("ERROR: "+ message);
+    }
+
+    public void clearAll() {
+        telemetry.clearAll();
     }
 
     public enum MSG_LEVEL {
