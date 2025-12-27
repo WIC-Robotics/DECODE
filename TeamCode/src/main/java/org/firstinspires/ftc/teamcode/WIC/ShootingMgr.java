@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.WIC;
 
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.AtlasMgr;
 import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.AxisMgr;
@@ -33,16 +31,19 @@ public class ShootingMgr {
             this.atlasMgr = new AtlasMgr(hardwareMap);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create AtlasMgr!");
-        }
-        try {
-            this.wheelMgr = new WheelMgr(hardwareMap);
-        } catch (Exception e) {
-            outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create WheelMgr!");
+//            throw e;
         }
         try {
             this.axisMgr = new AxisMgr(hardwareMap, headExceptionHandler);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create AxisMgr!");
+//            throw e;
+        }
+        try {
+            this.wheelMgr = new WheelMgr(hardwareMap, headExceptionHandler);
+        } catch (Exception e) {
+            outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create WheelMgr!");
+//            throw e;
         }
     }
 
@@ -54,17 +55,21 @@ public class ShootingMgr {
 //        atlasMgr.gazeUpBy(dTheta);
 //    }
 
-    //TODO 🗣️🗣️🗣️🗣️🗣️🗣️🗣️🗣️🗣️ IMPLEMENT IMMEDIATELY 🗣️🗣️🗣️🗣️🗣️🗣️🗣️🗣️🗣️
     public void aim(double r, double theta) {
         if (axisMgr != null) {
-            axisMgr.turnHead(theta);
+            axisMgr.turnHeadTo(theta);
         }
+
         //TODO find the gazeUp and wheelSpeed best for r, guided by PatternTracker and AxisManager
-        double targetThetaUp = 0, targetspeed= 0;
+        double targetThetaUp = r, targetSpeed= r*r; //TODO temp values
+        //TODO ***** Find the correct combination for targetThetaUp and targetSpeed ️ ******
         if (atlasMgr != null) {
-            atlasMgr.gazeUpTo(targetThetaUp);
+            atlasMgr.gazeUpTo_deg(targetThetaUp);
         }
-//        wheelMgr.speedupTo(targetspeed); //TODO revert this temp
+
+        if(!ConfMgr.isTesting()){
+            wheelMgr.speedupTo(targetSpeed); //TODO revert this temp
+        }
 
         //NOTE: if the axis fails (e.g. motor cable cut), this mat result in both
         // cannot_turn_left and cannot_turn_right
@@ -73,5 +78,20 @@ public class ShootingMgr {
         //    ret |= NEED_TO_MOVE_CLOSER;
         // else if too close to shoot
         //    ret |= NEED_TO_MOVE_FURTHER;
+    }
+
+    public void stop() {
+        if(atlasMgr != null){
+            atlasMgr.stop();
+            atlasMgr = null;
+        }
+        if (axisMgr != null) {
+            axisMgr.stop();
+            axisMgr = null;
+        }
+        if (wheelMgr != null) {
+            wheelMgr.stop();
+            wheelMgr = null;
+        }
     }
 }

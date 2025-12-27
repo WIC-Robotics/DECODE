@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.WIC.peripherals.shooting;
 
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
@@ -17,11 +18,15 @@ public class AxisMgr {
 
     private double tempLastPosition = 0;
 
-    private static final String AXIS_NAME = "Axis";
-    private static final String MAX_BOUND_SENSOR_NAME = "MaxBound";
-    private static final String MIN_BOUND_SENSOR_NAME = "MinBound";
+    private static final String AXIS_NAME = "lazysusan";
+    private static final String MAX_BOUND_SENSOR_NAME = "left-limitSwitch";
+    private static final String MIN_BOUND_SENSOR_NAME = "right- limitSwitch";
 
-    private final int MOTOR_ENCODER_TICKS_PER_REVOLUTION;
+    private final double ONE_OVER_MOTOR_ENCODER_TICKS_PER_REVOLUTION;
+
+    public void stop() {
+        continousMovementThread.stopThread();
+    }
 
     public class ContinousMovementThread extends Thread{
         boolean active = false;
@@ -41,10 +46,12 @@ public class AxisMgr {
         @Override
         public void run() {
             while (active){
-                int currentPosition = getCurrentPosition();
-                double dTheta = currentPosition - targetTheta;
+                double currentPosition = getCurrentPosition();
+                double dTheta = targetTheta - currentPosition;
 
-                System.out.printf("lastPosition=%f CurrentPosition=%d nextPower=%f\n",tempLastPosition, currentPosition, dTheta);
+//                System.out.printf("lastPosition=%f CurrentPosition=%f dTheta=%f nextPower=%f\n",tempLastPosition, currentPosition, Math.toDegrees(dTheta), dTheta);
+
+
 //                if(Math.abs(dTheta) > EPSILON) {
 //                    axisDcMotor.setPower(dTheta);
 //                }else{
@@ -52,29 +59,38 @@ public class AxisMgr {
 //                }
                 axisDcMotor.setPower(dTheta);
 
-                if (leftBoundSensor.isPressed()){
+                if (leftBoundSensor != null && leftBoundSensor.isPressed()){
                     leftBoundSensorClicked();
                     if (dTheta > EPSILON)
                         axisExceptionHandler.cannotTurnLeft();
                 }
-                else if (rightBoundSensor.isPressed()) {
+                else if (rightBoundSensor != null && rightBoundSensor.isPressed()) {
                     rightBoundSensorClicked();
                     if (-dTheta > EPSILON)
                         axisExceptionHandler.cannotTurnRight();
                 }
-                Thread.yield();
+                if(ConfMgr.isTesting()){
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {}
+                }else {
+                    Thread.yield();
+                }
             }
         }
     }
 
-    private int getCurrentPosition() {
-        //TODO make in degrees
-//        return axisDcMotor.getCurrentPosition(); //TODO revert this temp change
-        double delataTheta  = targetTheta - tempLastPosition;
-        Random random = new Random();
-        double change = random.nextDouble() * delataTheta;
-        tempLastPosition += (change - delataTheta / 3);
-        return (int) tempLastPosition;
+    private double getCurrentPosition() {
+        if (ConfMgr.isTesting()) {
+            //We will simulate because we don't have encoder cable
+            double deltaTheta = targetTheta - tempLastPosition;
+            Random random = new Random();
+            double change = random.nextDouble() * deltaTheta;
+            tempLastPosition += (change - deltaTheta / 3);
+            return tempLastPosition;
+        } else {
+            return axisDcMotor.getCurrentPosition() * ONE_OVER_MOTOR_ENCODER_TICKS_PER_REVOLUTION * 2 * Math.PI;
+        }
     }
 
     public ContinousMovementThread continousMovementThread = new ContinousMovementThread();
@@ -95,14 +111,24 @@ public class AxisMgr {
 
 
     public AxisMgr(HardwareMap hardwareMap, AxisExceptionHandler axisExceptionHandler) {
-        MOTOR_ENCODER_TICKS_PER_REVOLUTION = Integer.parseInt(ConfMgr.getInstance().get(this, "MOTOR_ENCODER_TICKS_PER_REVOLUTION"));
+        ONE_OVER_MOTOR_ENCODER_TICKS_PER_REVOLUTION = 1.0 / ConfMgr.getInstance().getDouble(this, "MOTOR_ENCODER_TICKS_PER_REVOLUTION");
         this.axisExceptionHandler = axisExceptionHandler;
         axisDcMotor = hardwareMap.get(DcMotor.class, AXIS_NAME);
-        leftBoundSensor = hardwareMap.get(RevTouchSensor.class, MAX_BOUND_SENSOR_NAME);
-        rightBoundSensor = hardwareMap.get(RevTouchSensor.class, MIN_BOUND_SENSOR_NAME);
+        if (! ConfMgr.isTesting()) {
+            leftBoundSensor = hardwareMap.get(RevTouchSensor.class, MAX_BOUND_SENSOR_NAME);
+            rightBoundSensor = hardwareMap.get(RevTouchSensor.class, MIN_BOUND_SENSOR_NAME);
+        }
+
+        //TODO Shall I keep them or undo this temp
+        if (ConfMgr.isTesting()) {
+            axisDcMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//            axisDcMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
 
 //        speedInDegreesPerTick = ConfMgr.getInstance().getDouble(this, "changePerTick");
         ACCEPTED_ERROR_AT_TARGET = ConfMgr.getInstance().getDouble(this, "ACCEPTED_ERROR_AT_TARGET");
+
+        continousMovementThread.startThread();
     }
 
     public void calibrate(){
@@ -120,8 +146,9 @@ public class AxisMgr {
 //        EPSILON = Math.toDegrees(Math.asin(ACCEPTED_ERROR_AT_TARGET/(ApriltagToCenterDistance + cameraTocCenterDistance+ apriltagDistance)));
     }
 
-    public void turnHead(double theta) {
-        double deltaTheta = targetTheta - theta;
+    public void turnHeadTo(double theta) {
+        this.targetTheta = theta;
+//        double deltaTheta = targetTheta - theta;
     }
 
 
