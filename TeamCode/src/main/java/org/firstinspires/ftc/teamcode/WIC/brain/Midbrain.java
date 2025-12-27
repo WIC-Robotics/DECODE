@@ -23,7 +23,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
     private final int desiredAprilTagID;
     private HardwareMap hardwareMap = null;
-//    private Telemetry telemetry;
+    //    private Telemetry telemetry;
     private OutputHandler outputHandler;
 
     ShootingMgr shootingMgr = null;
@@ -31,6 +31,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     private CameraMgr cameraMgr = null;
 
     private long startTime = 0;
+    private double lastTargetAngleAtlas = 0;
 
     public static final double APRIL_TAG_TO_INCENTER_DIST = 7.91; //in inches
     public static final double APRIL_TAG_TO_INCENTER_DIST_2 = APRIL_TAG_TO_INCENTER_DIST * APRIL_TAG_TO_INCENTER_DIST; //in inches
@@ -54,6 +55,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
             this.shootingMgr = new ShootingMgr(this.hardwareMap, this, outputHandler);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.WARN, "can't create Shooting Manager altogether");
+            throw e;
         }
 
         this.desiredAprilTagID = Integer.parseInt(confMgr.get(this, "desiredAprilTagID"));
@@ -64,7 +66,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     }
 
     public void stopStreaming() {
-        cameraMgr.stopStreaming();
+        cameraMgr.stop();
     }
 
     @Override
@@ -125,19 +127,35 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
          * and that reason is to have the camera as close to the shooting point as possible
          */
         double yaw = pose.yaw;
+        double range = pose.range;
+        double elevation = pose.elevation;
+
+//        yaw = Math.toRadians(yaw); //It is now in radians
 
 //        double lensToApriltagHorizontalDist = Math.sqrt(pose.range * pose.range - pose.elevation * pose.elevation);
-        double lensToApriltagHorizontalDist2 = pose.range * pose.range - pose.elevation * pose.elevation;
+        double lensToApriltagHorizontalDist2 = range * range - elevation * elevation;
 //        double lensToApriltagHorizontalDist = Math.sqrt(lensToApriltagHorizontalDist2);
 
-        double distToTarget_2 = APRIL_TAG_TO_INCENTER_DIST_2 + lensToApriltagHorizontalDist2 - 2 * Math.cos(180 - yaw) * Math.sqrt(APRIL_TAG_TO_INCENTER_DIST_2 * lensToApriltagHorizontalDist2);
+        double internal_angle_c = Math.PI - yaw;
+        double distToTarget_2 = APRIL_TAG_TO_INCENTER_DIST_2 + lensToApriltagHorizontalDist2 - 2 *
+                Math.cos(internal_angle_c) * Math.sqrt(APRIL_TAG_TO_INCENTER_DIST_2 * lensToApriltagHorizontalDist2);
 
         double distToTarget = Math.sqrt(distToTarget_2);
 
-        double targetTheta = Math.acos((APRIL_TAG_TO_INCENTER_DIST * Math.sin(distToTarget))/ (180 - yaw));
-        System.out.println(targetTheta);
+        double targetTheta = Math.asin(APRIL_TAG_TO_INCENTER_DIST * Math.sin(internal_angle_c) / distToTarget);
+//        System.out.println("targetThetaAxis  = " + targetTheta);
 
-        shootingMgr.aim(distToTarget, targetTheta);
+//        boolean fifthSecond = (System.currentTimeMillis() - startTime) % 5000 == 0;
+        long newAngle = 30 * ((System.currentTimeMillis() - startTime)/5000);
+        if (ConfMgr.isTesting()){
+            if(newAngle != lastTargetAngleAtlas) {
+                System.out.println("targetThetaAtlas  = " + newAngle);
+                shootingMgr.aim(newAngle, targetTheta);
+                lastTargetAngleAtlas = newAngle;
+            }
+        }else{
+            shootingMgr.aim(distToTarget, targetTheta);
+        }
     }
 
     @Override
@@ -160,6 +178,17 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     @Override
     public void robotTooFar() {
         // TODO move robot close to goal (forward in case you are looking forward)
+    }
+
+    public void stop() {
+        if (this.cameraMgr != null) {
+            this.cameraMgr.stop();
+            this.cameraMgr = null;
+        }
+        if (this.shootingMgr != null) {
+            this.shootingMgr.stop();
+            this.shootingMgr = null;
+        }
     }
 
 //    public void gazeUpTo(double theta) {

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.WIC.peripherals.shooting;
 
-import android.util.Size;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -36,7 +34,7 @@ public class CameraMgr {
 
         this.aprilTagProcessor = buildAprilTagProcessor(true, true, true,
                 AprilTagProcessor.TagFamily.TAG_36h11, AprilTagGameDatabase.getCurrentGameTagLibrary(),
-                DistanceUnit.INCH, AngleUnit.DEGREES);
+                DistanceUnit.INCH, AngleUnit.RADIANS);
         this.aprilTagProcessor.setDecimation(2);
 
         CAMERA = hardwareMap.get(WebcamName.class, WEBCAM_NAME);
@@ -106,9 +104,9 @@ public class CameraMgr {
         cameraThread.startThread();
     }
 
-    public void stopStreaming() {
-        visionPortal.stopStreaming();
+    public void stop() {
         cameraThread.stopThread();
+        visionPortal.stopStreaming();
     }
 
     private class CameraThread extends Thread {
@@ -124,16 +122,18 @@ public class CameraMgr {
         @Override
         public void run() {
             while (moreWork){
+//                System.out.println("CameraThread.run() called at " + System.currentTimeMillis());
                 ArrayList<AprilTagDetection> detections = aprilTagProcessor.getFreshDetections();
-                if (detections != null) {
+                if (moreWork && detections != null) {
                     aprilTagDetectionListener.aprilTagDetectionsFound(detections);
+                } else {
+//                    aprilTagDetectionListener.aprilTagDetectionsFound(null);
                 }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     moreWork = false;
                 }
-                aprilTagDetectionListener.aprilTagDetectionsFound(null);
             }
 
         }
