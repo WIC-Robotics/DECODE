@@ -17,7 +17,9 @@ import java.util.Map;
 import java.util.Scanner;
 
 
-/**
+/**This class handles saving and loading configurations.<br>
+ * It can tolerate white space and hash (#) incidents.
+ * When the value is a double, it also handles 'PI', '*' and '/'.<br>
  * It is assumed that the distance unit used everywhere is the INCH. If you find anything else,
  * please change it and raise a flag.
  */
@@ -37,6 +39,7 @@ public class ConfMgr {
         robotName.put(GLOBAL_DEFAULT_SERIAL, "GlobalDefault");
     }
     private final Map<String, String> settings = new HashMap<>();
+    private static boolean testing = false;
 
     private ConfMgr() {
 
@@ -78,6 +81,7 @@ public class ConfMgr {
             System.out.println("copying internal file ["+ internalSettingsFileId+"] into ["+ confFile+"]");
             createDefaultConfigFile(confFile, context, internalSettingsFileId);
         }
+        testing = serial.equals(TEST_DEVICE_SERIAL);
 
         try {
             Scanner scanner = new Scanner(confFile);
@@ -116,11 +120,12 @@ public class ConfMgr {
             if(line == null)
                 break;
             line = line.trim();
+            line = line.replaceAll("#.*", "");
             if (line.isEmpty()) {
                 continue;
             }
-            if (line.startsWith("#"))
-                continue;
+//            if (line.startsWith("#"))
+//                continue;
             String[] tokens = line.split("\\s*=\\s*", 2);
             settings.put(tokens[0], tokens[1]);
             System.out.println("["+tokens[0]+"], ["+tokens[1]+"]");
@@ -143,17 +148,35 @@ public class ConfMgr {
             System.out.println("Unknown Value for key: "+key);
             throw new RuntimeException("Unknown Value for key: "+key);
         }
-
-        if (val.contains("/")){
-            String[] operands = val.split("/");
-            return Double.parseDouble(operands[0]) / Double.parseDouble(operands[1]);
-        }
-        return Double.parseDouble(val);
+        val = val.replaceAll("\\s", "");
+        return parseStringToDouble(val);
     }
     public <T> double getDouble(@NonNull Class<T>cls, String key){
         return getDouble(cls.getSimpleName()+"."+key);
     }
     public double getDouble(@NonNull Object o, String key){
         return getDouble(o.getClass(), key);
+    }
+
+    private double parseStringToDouble(String string){
+        if (string.contains("*")){
+            String[] operands = string.split("\\*", 2);
+            return parseStringToDouble(operands[0]) * parseStringToDouble(operands[1]);
+        }
+        if (string.contains("/")){
+            String[] operands = string.split("/", 2);
+            return parseStringToDouble(operands[0]) / parseStringToDouble(operands[1]);
+        }
+        if (string.equals("PI"))
+            return Math.PI;
+        return Double.parseDouble(string);
+    }
+
+
+    public static boolean isTesting() {
+        if (instance == null)
+            getInstance();
+//        System.out.println("testing is " + testing);
+        return testing;
     }
 }
