@@ -19,8 +19,8 @@ public class AxisMgr {
     private double tempLastPosition = 0;
 
     private static final String AXIS_NAME = "lazysusan";
-    private static final String MAX_BOUND_SENSOR_NAME = "left-limitSwitch";
-    private static final String MIN_BOUND_SENSOR_NAME = "right- limitSwitch";
+    private static final String MAX_BOUND_SENSOR_NAME = "right- limitSwitch";
+    private static final String MIN_BOUND_SENSOR_NAME = "left-limitSwitch";
 
     private final double ONE_OVER_MOTOR_ENCODER_TICKS_PER_REVOLUTION;
 
@@ -57,6 +57,9 @@ public class AxisMgr {
 //                }else{
 //                    axisDcMotor.setPower(0);
 //                }
+                if (ConfMgr.isTesting()) {
+                    System.out.println("---------------> Axis Power: " + dTheta);
+                }
                 axisDcMotor.setPower(dTheta);
 
                 if (leftBoundSensor != null && leftBoundSensor.isPressed()){
