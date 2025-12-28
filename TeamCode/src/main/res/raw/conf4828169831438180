@@ -12,3 +12,4 @@ AxisMgr.ACCEPTED_ERROR_AT_TARGET = 5
 AxisMgr.MOTOR_ENCODER_TICKS_PER_REVOLUTION = 145.1 # equals 360 (or 2*PI)
 WheelMgr.MOTOR_TICKS_PER_SECOND = 145.1
 Midbrain.desiredAprilTagID = 21
+ShootingMgr.throwErrors = true

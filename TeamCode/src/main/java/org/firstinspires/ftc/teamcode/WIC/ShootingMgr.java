@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
 import org.firstinspires.ftc.teamcode.WIC.util.OutputHandler;
 
 public class ShootingMgr {
+    private final boolean throwErrors;
 
 //    public static final int OK = 0;
 //    public static final int NEED_TO_TURN_LEFT = 1;
@@ -27,23 +28,31 @@ public class ShootingMgr {
         this.headExceptionHandler = headExceptionHandler;
         this.outputHandler = outputHandler;
 
+        this.throwErrors = Boolean.parseBoolean(ConfMgr.getInstance().get(this, "throwErrors"));
+
         try {
             this.atlasMgr = new AtlasMgr(hardwareMap);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create AtlasMgr!");
-//            throw e;
+            if (throwErrors) {
+                throw e;
+            }
         }
         try {
             this.axisMgr = new AxisMgr(hardwareMap, headExceptionHandler);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create AxisMgr!");
-//            throw e;
+            if (throwErrors) {
+                throw e;
+            }
         }
         try {
             this.wheelMgr = new WheelMgr(hardwareMap, headExceptionHandler);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create WheelMgr!");
-//            throw e;
+            if (throwErrors) {
+                throw e;
+            }
         }
     }
 
@@ -78,6 +87,10 @@ public class ShootingMgr {
         //    ret |= NEED_TO_MOVE_CLOSER;
         // else if too close to shoot
         //    ret |= NEED_TO_MOVE_FURTHER;
+    }
+
+    public void shoot() {
+        //TODO turn rubber intake
     }
 
     public void stop() {
