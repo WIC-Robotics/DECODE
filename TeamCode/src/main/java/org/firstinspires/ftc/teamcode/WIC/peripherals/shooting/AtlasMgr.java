@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.WIC.peripherals.shooting;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
@@ -27,6 +28,10 @@ public class AtlasMgr {
     public class ContinousMovementThread extends Thread{
         boolean active = false;
 
+
+        double lowestPotentiometerVoltage = Double.MAX_VALUE;
+        double highestPotentiometerVoltage = Double.MIN_VALUE;
+
         public synchronized void startThread() {
             this.active = true;
             super.start();
@@ -42,10 +47,16 @@ public class AtlasMgr {
         @Override
         public void run() {
             while (active){
+                double voltage = (int)(atlasPotentiometer.getVoltage()*1000)/1000.;
+                if(voltage > highestPotentiometerVoltage)
+                    highestPotentiometerVoltage = voltage;
+                if(voltage < lowestPotentiometerVoltage)
+                    lowestPotentiometerVoltage = voltage;
+                System.out.printf("****** voltage= %f lowestVoltage = %f highestVoltage = %f \n", voltage, lowestPotentiometerVoltage, highestPotentiometerVoltage);
                 double dTheta = targetTheta_deg - getCurrentAngle_deg();
-                System.out.print("targetTheta= " + targetTheta_deg + " dTheta= "+ dTheta+" power= ");
+                System.out.print("AtlasAtlas targetTheta= " + targetTheta_deg + " dTheta= "+ dTheta / 10+" power= ");
                 if(Math.abs(dTheta) > EPSILON){
-                    atlasServo.setPower(Range.clip(dTheta, -1, 1));
+                    atlasServo.setPower(Range.clip(dTheta / 10, -1, 1));
                     System.out.print(dTheta);
                 }else{
                     System.out.print("----");
@@ -72,19 +83,19 @@ public class AtlasMgr {
     CRServo atlasServo;
     AnalogInput atlasPotentiometer;
 
-    private double SERVO_START_POWER = 0;
-    private double SERVO_END_POWER = 0;
-    private double ATLAS_START_ANGLE = 0;
-    private double ATLAS_END_ANGLE;
+//    private double SERVO_START_POWER = 0;
+//    private double SERVO_END_POWER = 0;
+//    private double ATLAS_START_ANGLE = 0;
+//    private double ATLAS_END_ANGLE;
 
-    private double POTENTIOMETER_START_ANGLE_DEG;
-    private double POTENTIOMETER_END_ANGLE_DEG;
-    private double POTENTIOMETER_START_VOLTAGE;
-    private double POTENTIOMETER_END_VOLTAGE;
+    private final double POTENTIOMETER_START_ANGLE_DEG;
+    private final double POTENTIOMETER_END_ANGLE_DEG;
+    private final double POTENTIOMETER_START_VOLTAGE;
+    private final double POTENTIOMETER_END_VOLTAGE;
     private double POTENTIOMETER_VOLTAGE_TO_ANGLE_DEG;
 
     private double POTENTIOMETER_OFFSET_ANGLE = 0;
-    private double atlasToServoGearRatio = 0;
+//    private double atlasToServoGearRatio = 0;
 
     //TODO create a <B>ConfigureAndCalibrate<//B> OpMode. Put a calibrateAtlas() function in it.
 
@@ -98,30 +109,37 @@ public class AtlasMgr {
             this.atlasPotentiometer = hardwareMap.get(AnalogInput.class, POTENTIOMETER_NAME);
         }
 
-        SERVO_START_POWER = confMgr.getDouble(this, "SERVO_START_POWER");
-        SERVO_END_POWER = confMgr.getDouble(this, "SERVO_END_POWER");
-        double SERVO_START_ANGLE = confMgr.getDouble(this, "SERVO_START_ANGLE");
-        double SERVO_END_ANGLE = confMgr.getDouble(this, "SERVO_END_ANGLE");
-        ATLAS_START_ANGLE = confMgr.getDouble(this, "ATLAS_START_ANGLE");
-        ATLAS_END_ANGLE = confMgr.getDouble(this, "ATLAS_END_ANGLE");
+        //TODO add reverse setting for servo
+        atlasServo.setDirection(DcMotorSimple.Direction.REVERSE);
+
+//        SERVO_START_POWER = confMgr.getDouble(this, "SERVO_END_POWER");
+//        ATLAS_START_ANGLE = confMgr.getDouble(this, "ATLAS_START_ANGLE");
+//        ATLAS_END_ANGLE = confMgr.getDouble(this, "ATLAS_END_ANGLE");
+//        double SERVO_START_ANGLE = confMgr.getDouble(this, "SERVO_START_ANGLE");
+//        double SERVO_END_ANGLE = confMgr.getDouble(this, "SERVO_END_ANGLE");
 
         POTENTIOMETER_START_ANGLE_DEG = confMgr.getDouble(this, "POTENTIOMETER_START_ANGLE_DEG");
         POTENTIOMETER_END_ANGLE_DEG = confMgr.getDouble(this, "POTENTIOMETER_END_ANGLE_DEG");
         POTENTIOMETER_START_VOLTAGE = confMgr.getDouble(this, "POTENTIOMETER_START_VOLTAGE");
-        POTENTIOMETER_END_VOLTAGE = confMgr.getDouble(this, "POTENTIOMETER_START_VOLTAGE");
-        POTENTIOMETER_VOLTAGE_TO_ANGLE_DEG = (POTENTIOMETER_END_VOLTAGE - POTENTIOMETER_START_VOLTAGE) /
-                (POTENTIOMETER_END_ANGLE_DEG - POTENTIOMETER_START_ANGLE_DEG);
+        POTENTIOMETER_END_VOLTAGE = confMgr.getDouble(this, "POTENTIOMETER_END_VOLTAGE");
+        updatePotentiometer();
 
         //TODO find min and max power, save them, and simplify the calculations
-        atlasToServoGearRatio = (SERVO_END_ANGLE - SERVO_START_ANGLE) / (ATLAS_END_ANGLE - ATLAS_START_ANGLE);
+//        atlasToServoGearRatio = (SERVO_END_ANGLE - SERVO_START_ANGLE) / (ATLAS_END_ANGLE - ATLAS_START_ANGLE);
 
         this.continousMovementThread.startThread();
 
 //        KP = confMgr.getDouble(this, "KP");
     }
 
+    private double updatePotentiometer() {
+        return POTENTIOMETER_VOLTAGE_TO_ANGLE_DEG
+                = (POTENTIOMETER_END_ANGLE_DEG - POTENTIOMETER_START_ANGLE_DEG) /
+                (POTENTIOMETER_END_VOLTAGE - POTENTIOMETER_START_VOLTAGE);
+    }
+
     public double voltageToAngle_deg(double voltage){
-        return voltage * POTENTIOMETER_VOLTAGE_TO_ANGLE_DEG;
+        return POTENTIOMETER_VOLTAGE_TO_ANGLE_DEG * (voltage - POTENTIOMETER_START_VOLTAGE);
     }
 
     public double getCurrentAngle_deg(){
@@ -133,7 +151,9 @@ public class AtlasMgr {
             tempLastPosition += (change - deltaThetaAtlas / 3);
             return tempLastPosition;
         } else {
-            return voltageToAngle_deg(atlasPotentiometer.getVoltage()) - POTENTIOMETER_OFFSET_ANGLE;
+            double vvv = (int) (atlasPotentiometer.getVoltage() * 1000) / 1000.;
+            System.out.println("AtAtAt voltage = "+ vvv + "current Angle= "+voltageToAngle_deg(vvv));
+            return voltageToAngle_deg((int)(atlasPotentiometer.getVoltage()*1000)/1000.) - POTENTIOMETER_OFFSET_ANGLE;
         }
     }
 

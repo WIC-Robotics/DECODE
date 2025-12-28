@@ -67,7 +67,7 @@ public class ConfMgr {
                     break;
                 case CRAB_SERIAL:
                     System.out.println("Device is CRAB");
-                    internalSettingsFileId = R.raw.conf0; //conf4828169831438180;
+                    internalSettingsFileId = R.raw.conf4828169831438180;
                     break;
                 case FLYING_FISH_SERIAL:
                     System.out.println("Device is Flying Fish");
