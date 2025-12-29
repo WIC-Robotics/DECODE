@@ -69,6 +69,7 @@ public class ShootingMgr {
             axisMgr.turnHeadTo(theta);
         }
 
+        System.out.println(".............." + r);
         //TODO find the gazeUp and wheelSpeed best for r, guided by PatternTracker and AxisManager
         double targetThetaUp = r, targetSpeed= r*r; //TODO temp values
         //TODO ***** Find the correct combination for targetThetaUp and targetSpeed ️ ******
