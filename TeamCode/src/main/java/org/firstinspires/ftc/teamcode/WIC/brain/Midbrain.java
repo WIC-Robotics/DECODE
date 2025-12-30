@@ -22,11 +22,12 @@ import java.util.ArrayList;
 public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler {
 
     private final int desiredAprilTagID;
-    private HardwareMap hardwareMap = null;
+    private final boolean throwErrors;
+    private HardwareMap hardwareMap;
     //    private Telemetry telemetry;
     private OutputHandler outputHandler;
 
-    ShootingMgr shootingMgr = null;
+    ShootingMgr shootingMgr;
 
     private CameraMgr cameraMgr = null;
 
@@ -46,13 +47,15 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         AppContextProvider.setAppContext(this.hardwareMap.appContext);
         ConfMgr confMgr = ConfMgr.getInstance();
 
+        this.throwErrors = confMgr.getBoolean(this, "throwErrors");
+
         try {
             this.cameraMgr = new CameraMgr(this.hardwareMap, this);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.WARN, "can't create Camera Manager");
         }
         try {
-            this.shootingMgr = new ShootingMgr(this.hardwareMap, this, outputHandler);
+            this.shootingMgr = new ShootingMgr(this.hardwareMap, this, outputHandler, throwErrors);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.WARN, "can't create Shooting Manager altogether");
             throw e;
@@ -146,8 +149,8 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 //        System.out.println("targetThetaAxis  = " + targetTheta);
 
 //        boolean fifthSecond = (System.currentTimeMillis() - startTime) % 5000 == 0;
-        long newAngle = 30 * ((System.currentTimeMillis() - startTime)/5000);
-        if (ConfMgr.isTesting()){
+        if (ConfMgr.isDemo()){
+            long newAngle = (((System.currentTimeMillis() - startTime)/10000) % 4) *10;
             if(newAngle != lastTargetAngleAtlas) {
                 System.out.println("targetThetaAtlas  = " + newAngle);
                 shootingMgr.aim(newAngle, targetTheta);

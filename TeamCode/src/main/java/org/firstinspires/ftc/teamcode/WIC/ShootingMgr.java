@@ -10,6 +10,8 @@ import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.WheelMgr;
 import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
 import org.firstinspires.ftc.teamcode.WIC.util.OutputHandler;
 
+import java.util.Random;
+
 public class ShootingMgr {
     private final boolean throwErrors;
 
@@ -24,17 +26,17 @@ public class ShootingMgr {
     private AtlasMgr atlasMgr;
     private WheelMgr wheelMgr;
     private AxisMgr axisMgr;
-    public ShootingMgr(HardwareMap hardwareMap, HeadExceptionHandler headExceptionHandler, OutputHandler outputHandler) {
+    public ShootingMgr(HardwareMap hardwareMap, HeadExceptionHandler headExceptionHandler, OutputHandler outputHandler, boolean throwErrors) {
         this.headExceptionHandler = headExceptionHandler;
         this.outputHandler = outputHandler;
 
-        this.throwErrors = Boolean.parseBoolean(ConfMgr.getInstance().get(this, "throwErrors"));
+        this.throwErrors = throwErrors;
 
         try {
             this.atlasMgr = new AtlasMgr(hardwareMap);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create AtlasMgr!");
-            if (throwErrors) {
+            if (this.throwErrors) {
                 throw e;
             }
         }
@@ -42,7 +44,7 @@ public class ShootingMgr {
             this.axisMgr = new AxisMgr(hardwareMap, headExceptionHandler);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create AxisMgr!");
-            if (throwErrors) {
+            if (this.throwErrors) {
                 throw e;
             }
         }
@@ -50,7 +52,7 @@ public class ShootingMgr {
             this.wheelMgr = new WheelMgr(hardwareMap, headExceptionHandler);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create WheelMgr!");
-            if (throwErrors) {
+            if (this.throwErrors) {
                 throw e;
             }
         }
@@ -71,14 +73,16 @@ public class ShootingMgr {
 
         System.out.println(".............." + r);
         //TODO find the gazeUp and wheelSpeed best for r, guided by PatternTracker and AxisManager
-        double targetThetaUp = r, targetSpeed= r*r; //TODO temp values
+        double[] combo = findBestWheelAndHoodCombo(r);
+        double targetThetaUp = combo[1], targetSpeed = combo[0]; //TODO temp values
+
         //TODO ***** Find the correct combination for targetThetaUp and targetSpeed ️ ******
         if (atlasMgr != null) {
             atlasMgr.gazeUpTo_deg(targetThetaUp);
         }
 
-        if(!ConfMgr.isTesting()){
-            wheelMgr.speedupTo(targetSpeed); //TODO revert this temp
+        if(wheelMgr != null){
+            wheelMgr.speedupTo((int) targetSpeed);
         }
 
         //NOTE: if the axis fails (e.g. motor cable cut), this mat result in both
@@ -92,6 +96,17 @@ public class ShootingMgr {
 
     public void shoot() {
         //TODO turn rubber intake
+    }
+
+    private double[] findBestWheelAndHoodCombo(double r) { //TODO undo temp
+        Random random = new Random();
+        double wheelSpeed = 0;
+        double hoodAngle = 0;
+        if (!ConfMgr.isDemo()){
+            wheelSpeed = random.nextDouble();
+            hoodAngle = Math.round(random.nextDouble() * 31);
+        }
+        return new double[] {wheelSpeed, hoodAngle};
     }
 
     public void stop() {
