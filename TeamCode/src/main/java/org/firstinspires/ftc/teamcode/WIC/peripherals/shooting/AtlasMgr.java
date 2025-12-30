@@ -50,6 +50,7 @@ public class AtlasMgr {
                     System.out.print(dTheta);
                 }else{
                     System.out.print("----");
+                    atlasServo.setPower(0);
                 }
                 System.out.println();
                 if(ConfMgr.isDemo()){
