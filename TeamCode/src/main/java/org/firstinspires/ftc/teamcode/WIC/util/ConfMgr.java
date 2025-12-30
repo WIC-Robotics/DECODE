@@ -40,14 +40,16 @@ public class ConfMgr {
     }
     private final Map<String, String> settings = new HashMap<>();
     private static boolean testing = false;
+    private static final String DEMO = "DEMO";
+    private static Boolean demo = null;
 
     private ConfMgr() {
 
         Context context = AppContextProvider.getAppContext();
         if(context == null)
             throw new IllegalStateException("AppContext must be set before any attempt to use ConfMgr. Maybe you forgot to write \"AppContextProvider.setAppContext(hardwareMap.appContext);\" in the beginning of your activity init() function");
-        String serial = Build.SERIAL;
-        int internalSettingsFileId = -1;
+        String serial = Build.SERIAL; //TODO find a better way to get serial #
+        int internalSettingsFileId;
         System.out.println("deviceSerial = " + serial);
         File externalStorageDirectory = Environment.getExternalStorageDirectory();
         File wicFolder = new File(externalStorageDirectory, "WICFolder");
@@ -83,10 +85,8 @@ public class ConfMgr {
         }
         testing = serial.equals(TEST_DEVICE_SERIAL);
 
-        try {
-            Scanner scanner = new Scanner(confFile);
+        try (Scanner scanner = new Scanner(confFile)) {
             fillSettings(scanner);
-            scanner.close();
         } catch (Exception e) {
             System.out.println("could not read config file because of exception");
             throw new RuntimeException(e);
@@ -143,12 +143,12 @@ public class ConfMgr {
         return get(o.getClass(), key);
     }
     public double getDouble(String key){
-        String val = settings.get(key);
+        String val = get(key);
         if (val == null){
             System.out.println("Unknown Value for key: "+key);
             throw new RuntimeException("Unknown Value for key: "+key);
         }
-        val = val.replaceAll("\\s", "");
+        val = val.replaceAll("\\s+", "");
         return parseStringToDouble(val);
     }
     public <T> double getDouble(@NonNull Class<T>cls, String key){
@@ -156,6 +156,42 @@ public class ConfMgr {
     }
     public double getDouble(@NonNull Object o, String key){
         return getDouble(o.getClass(), key);
+    }
+
+    public int getInt(String key){
+        String val = get(key);
+        if (val == null){
+            System.out.println("Unknown Value for key: "+key);
+            throw new RuntimeException("Unknown Value for key: "+key);
+        }
+        val = val.replaceAll("\\s+", "");
+        return Integer.parseInt(val);
+    }
+    public <T> int getInt(@NonNull Class<T>cls, String key){
+        return getInt(cls.getSimpleName()+"."+key);
+    }
+    public int getInt(@NonNull Object o, String key){
+        return getInt(o.getClass(), key);
+    }
+
+
+    public boolean getBoolean(String key) throws IllegalArgumentException {
+        String val = get(key);
+        val = val.toLowerCase();
+        if(val.matches("[0-9-]+"))
+            return ! val.equals("0");
+        else if (val.equals("yes") || val.equals("true" ))
+            return true;
+        else if (val.equals("no" ) || val.equals("false"))
+            return false;
+        throw new IllegalArgumentException("Invalid boolean value");
+    }
+
+    public <T> boolean getBoolean(@NonNull Class<T>cls, String key){
+        return getBoolean(cls.getSimpleName()+"."+key);
+    }
+    public boolean getBoolean(@NonNull Object o, String key){
+        return getBoolean(o.getClass(), key);
     }
 
     private double parseStringToDouble(String string){
@@ -173,10 +209,18 @@ public class ConfMgr {
     }
 
 
-    public static boolean isTesting() {
+    public static boolean isTestingDevice() {
         if (instance == null)
             getInstance();
 //        System.out.println("testing is " + testing);
         return testing;
+    }
+
+    public static boolean isDemo() {
+        if (demo == null) {
+            ConfMgr mgr = getInstance();
+            demo = mgr.settings.containsKey(DEMO) && mgr.getBoolean(DEMO);
+        }
+        return demo;
     }
 }

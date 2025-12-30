@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.WIC.peripherals.shooting;
 
 import com.qualcomm.hardware.rev.RevTouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
@@ -57,7 +56,7 @@ public class AxisMgr {
 //                }else{
 //                    axisDcMotor.setPower(0);
 //                }
-                if (ConfMgr.isTesting()) {
+                if (ConfMgr.isTestingDevice()) {
                     System.out.println("---------------> Axis Power: " + dTheta);
                 }
                 axisDcMotor.setPower(dTheta);
@@ -72,7 +71,7 @@ public class AxisMgr {
                     if (-dTheta > EPSILON)
                         axisExceptionHandler.cannotTurnRight();
                 }
-                if(ConfMgr.isTesting()){
+                if(ConfMgr.isTestingDevice()){
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {}
@@ -84,7 +83,7 @@ public class AxisMgr {
     }
 
     private double getCurrentPosition() {
-        if (ConfMgr.isTesting()) {
+        if (ConfMgr.isTestingDevice()) {
             //We will simulate because we don't have encoder cable
             double deltaTheta = targetTheta - tempLastPosition;
             Random random = new Random();
@@ -117,13 +116,13 @@ public class AxisMgr {
         ONE_OVER_MOTOR_ENCODER_TICKS_PER_REVOLUTION = 1.0 / ConfMgr.getInstance().getDouble(this, "MOTOR_ENCODER_TICKS_PER_REVOLUTION");
         this.axisExceptionHandler = axisExceptionHandler;
         axisDcMotor = hardwareMap.get(DcMotor.class, AXIS_NAME);
-        if (! ConfMgr.isTesting()) {
+        if (! ConfMgr.isTestingDevice()) {
             leftBoundSensor = hardwareMap.get(RevTouchSensor.class, MAX_BOUND_SENSOR_NAME);
             rightBoundSensor = hardwareMap.get(RevTouchSensor.class, MIN_BOUND_SENSOR_NAME);
         }
 
         //TODO Shall I keep them or undo this temp
-        if (ConfMgr.isTesting()) {
+        if (ConfMgr.isTestingDevice()) {
             axisDcMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //            axisDcMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         }
