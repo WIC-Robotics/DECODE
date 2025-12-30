@@ -53,7 +53,10 @@ public class CalibrateShooting extends OpMode implements ShootingExceptionHandle
         } else if (gp.aWasReleased()) {
             optionIdx++;
         }
+
+        optionIdx += optionNames.length;
         optionIdx %= optionNames.length;
+
         currentOptionAlternativeIdx = selectedAlternatives[optionIdx];
 
         if (gp.bWasReleased()) {
