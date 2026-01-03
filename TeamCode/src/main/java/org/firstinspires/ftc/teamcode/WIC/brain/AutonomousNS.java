@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 
-@Autonomous(name = "Script")
+@Autonomous(name = "Autonomous Script")
 public class AutonomousNS extends OpMode {
 
     @Override

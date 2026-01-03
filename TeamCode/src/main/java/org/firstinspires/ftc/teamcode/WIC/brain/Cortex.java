@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "Driver Control")
+@TeleOp(name = "TeleOp")
 public class Cortex extends OpMode {
 
     Midbrain midbrain = null;
