@@ -51,8 +51,7 @@ public class ConfMgr {
         String serial = Build.SERIAL; //TODO find a better way to get serial #
         int internalSettingsFileId;
         System.out.println("deviceSerial = " + serial);
-        File externalStorageDirectory = Environment.getExternalStorageDirectory();
-        File wicFolder = new File(externalStorageDirectory, "WICFolder");
+        File wicFolder = getWicFolder();
         File confFile = new File(wicFolder, "conf"+robotName.get(serial)+".txt");
 
         if (!wicFolder.exists()){
