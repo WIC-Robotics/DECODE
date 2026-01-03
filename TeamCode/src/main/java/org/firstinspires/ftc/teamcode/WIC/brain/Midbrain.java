@@ -62,14 +62,19 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         }
 
         this.desiredAprilTagID = Integer.parseInt(confMgr.get(this, "desiredAprilTagID"));
+        this.cameraMgr.startStreaming();
     }
 
     public void startStreaming() {
-        cameraMgr.startStreaming();
+        if (cameraMgr != null) {
+            cameraMgr.startStreaming();
+        }
     }
 
     public void stopStreaming() {
-        cameraMgr.stop();
+        if (cameraMgr != null) {
+            cameraMgr.stop();
+        }
     }
 
     @Override
@@ -131,32 +136,49 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
          */
         double yaw = pose.yaw;
         double range = pose.range;
+        double bearing = pose.bearing;
         double elevation = pose.elevation;
+//        System.out.println("yaw = " + Math.toDegrees(yaw));
+//        System.out.println("range = " + range);
+//        System.out.println("bearing = " + bearing);
+//        System.out.println("elevation = " + elevation);
 
 //        yaw = Math.toRadians(yaw); //It is now in radians
 
 //        double lensToApriltagHorizontalDist = Math.sqrt(pose.range * pose.range - pose.elevation * pose.elevation);
         double lensToApriltagHorizontalDist2 = range * range - elevation * elevation;
 //        double lensToApriltagHorizontalDist = Math.sqrt(lensToApriltagHorizontalDist2);
+//        System.out.println("lensToApriltagHorizontalDist2 = " + Math.sqrt(lensToApriltagHorizontalDist2));
 
         double internal_angle_c = Math.PI - yaw;
+//        System.out.println("internal_angle_c = " + Math.toDegrees(internal_angle_c));
+
         double distToTarget_2 = APRIL_TAG_TO_INCENTER_DIST_2 + lensToApriltagHorizontalDist2 - 2 *
                 Math.cos(internal_angle_c) * Math.sqrt(APRIL_TAG_TO_INCENTER_DIST_2 * lensToApriltagHorizontalDist2);
 
         double distToTarget = Math.sqrt(distToTarget_2);
+//        System.out.println("distToTarget = " + distToTarget);
 
-        double targetTheta = Math.asin(APRIL_TAG_TO_INCENTER_DIST * Math.sin(internal_angle_c) / distToTarget);
+        double angleA = Math.asin((APRIL_TAG_TO_INCENTER_DIST * Math.sin(internal_angle_c)) / distToTarget);
+        double relativeHeadOrientation = shootingMgr.getCurrentHeadPositionRad();
+        double targetTheta = angleA + bearing + relativeHeadOrientation;
+
+
+//        System.out.println("targetTheta = " + Math.toDegrees(targetTheta));
+
 //        System.out.println("targetThetaAxis  = " + targetTheta);
 
 //        boolean fifthSecond = (System.currentTimeMillis() - startTime) % 5000 == 0;
         if (ConfMgr.isDemo()){
             long newAngle = (((System.currentTimeMillis() - startTime)/10000) % 4) *10;
             if(newAngle != lastTargetAngleAtlas) {
-                System.out.println("targetThetaAtlas  = " + newAngle);
                 shootingMgr.aim(newAngle, targetTheta);
                 lastTargetAngleAtlas = newAngle;
             }
         }else{
+            System.out.println("targetTheta B4 aim=\t" + Math.toDegrees(targetTheta));
+            System.out.printf("AprilTag yaw= %f\tbearing= %f\tangleA= %f\ttargetTheta= %f\n",
+                    Math.toDegrees(yaw), Math.toDegrees(bearing),Math.toDegrees(angleA) ,Math.toDegrees(targetTheta));
             shootingMgr.aim(distToTarget, targetTheta);
         }
     }

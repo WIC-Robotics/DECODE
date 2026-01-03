@@ -66,6 +66,10 @@ public class ShootingMgr {
 //        atlasMgr.gazeUpBy(dTheta);
 //    }
 
+    public double getCurrentHeadPositionRad() {
+        return axisMgr.getCurrentHeadPositionRad();
+    }
+
     public void aim(double r, double theta) {
         if (axisMgr != null) {
             axisMgr.turnHeadTo(theta);
