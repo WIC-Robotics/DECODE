@@ -93,6 +93,12 @@ public class ConfMgr {
         }
     }
 
+    @NonNull
+    static File getWicFolder() {
+        File externalStorageDirectory = Environment.getExternalStorageDirectory();
+        return new File(externalStorageDirectory, "WICFolder");
+    }
+
     public static ConfMgr getInstance(){
         if (instance == null) {
             instance = new ConfMgr();
