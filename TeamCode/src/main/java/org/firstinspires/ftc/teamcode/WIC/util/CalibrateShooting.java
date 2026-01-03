@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.WheelMgr;
 
 import java.util.ArrayList;
 
-@TeleOp(name = "Calibrate shooting", group = "Calibration")
+@TeleOp(name = "Calibrate Shooting", group = "Calibration")
 public class CalibrateShooting extends OpMode implements ShootingExceptionHandler {
 
     String[] optionNames = {
