@@ -78,41 +78,9 @@ public class AxisMgr {
                 Thread.yield();
             }
         }
-
-//        @Override
-//        public void cannotTurnLeft() {
-//            if (!this.calibrating){
-//                AxisMgr.this.axisExceptionHandler.cannotTurnLeft();
-//            }
-//        }
-//
-//        @Override
-//        public void cannotTurnRight() {
-//
-//        }
     }
 
-    public double getCurrentHeadPositionRad() {
-//        if (ConfMgr.isTestingDevice()) {
-//            //We will simulate because we don't have encoder cable
-//            double deltaTheta = targetTheta - tempLastPosition;
-//            Random random = new Random();
-//            double change = random.nextDouble() * deltaTheta;
-//            tempLastPosition += (change - deltaTheta / 3);
-//            return tempLastPosition;
-//        } else {
-//            return axisDcMotor.getCurrentPosition() * ONE_OVER_MOTOR_ENCODER_TICKS_PER_REVOLUTION * 2 * Math.PI;
-//        }
-        return motorEncoderTicksToHeadAngleRadians(axisDcMotor.getCurrentPosition());
-    }
-
-    private double motorEncoderTicksToHeadAngleRadians(double encoderTicks) {
-        return encoderTicks * ENCODER_TICKS_TO_HEAD_ANGLE_RAD;
-    }
-    private int headAngleRadiansToMotorEncoderTicks(double headAngle_rad) {
-        return (int) (headAngle_rad * HEAD_ANGLE_RAD_TO_ENCODER_TICKS);
-    }
-
+    RevTouchSensor leftBoundSensor, rightBoundSensor;
     public ContinuousMovementThread continuousMovementThread = new ContinuousMovementThread();
     private AxisExceptionHandler axisExceptionHandler = null;
     double ACCEPTED_ERROR_AT_TARGET;
@@ -123,7 +91,6 @@ public class AxisMgr {
     private double targetTheta;
 
     DcMotor axisDcMotor;
-    RevTouchSensor leftBoundSensor, rightBoundSensor;
 
     double rightmostEncoderValue, leftmostEncoderValue, range;
 
@@ -133,18 +100,19 @@ public class AxisMgr {
     public AxisMgr(HardwareMap hardwareMap, AxisExceptionHandler axisExceptionHandler) {
 //        ONE_OVER_MOTOR_ENCODER_TICKS_PER_REVOLUTION = 1.0 / ConfMgr.getInstance().getDouble(this, "MOTOR_ENCODER_TICKS_PER_REVOLUTION");
         this.axisExceptionHandler = axisExceptionHandler;
-        axisDcMotor = hardwareMap.get(DcMotor.class, AXIS_NAME);
+        ConfMgr confMgr = ConfMgr.getInstance();
+
         leftBoundSensor = hardwareMap.get(RevTouchSensor.class, LEFT_BOUND_SENSOR_NAME);
         rightBoundSensor = hardwareMap.get(RevTouchSensor.class, RIGHT_BOUND_SENSOR_NAME);
 
+        axisDcMotor = hardwareMap.get(DcMotor.class, AXIS_NAME);
         axisDcMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         axisDcMotor.setTargetPosition(0);
         axisDcMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         axisDcMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        axisDcMotor.setPower(0.2);
+        axisDcMotor.setPower(0.4);
         axisDcMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        ConfMgr confMgr = ConfMgr.getInstance();
         leftmostEncoderValue = confMgr.getInt(this, "LEFTMOST_ENCODER_VALUE");
         rightmostEncoderValue = confMgr.getInt(this, "RIGHTMOST_ENCODER_VALUE");
 
@@ -153,8 +121,6 @@ public class AxisMgr {
 
         ACCEPTED_ERROR_AT_TARGET = confMgr.getDouble(this, "ACCEPTED_ERROR_AT_TARGET");
         update();
-
-        continuousMovementThread.startThread();
     }
 
     public void calibrate(){
@@ -182,6 +148,17 @@ public class AxisMgr {
         //set values in the ConfMgr to save them.
 
     }
+    public double getCurrentHeadPositionRad() {
+        return motorEncoderTicksToHeadAngleRadians(axisDcMotor.getCurrentPosition());
+    }
+
+    private double motorEncoderTicksToHeadAngleRadians(double encoderTicks) {
+        return encoderTicks * ENCODER_TICKS_TO_HEAD_ANGLE_RAD;
+    }
+    private int headAngleRadiansToMotorEncoderTicks(double headAngle_rad) {
+        return (int) (headAngle_rad * HEAD_ANGLE_RAD_TO_ENCODER_TICKS);
+    }
+
     private void update(){
 //        EPSILON = Math.toDegrees(Math.asin(ACCEPTED_ERROR_AT_TARGET/(ApriltagToCenterDistance + cameraTocCenterDistance+ apriltagDistance)));
         this.HEAD_ANGLE_RAD_TO_ENCODER_TICKS =

@@ -36,6 +36,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
     public static final double APRIL_TAG_TO_INCENTER_DIST = 7.91; //in inches
     public static final double APRIL_TAG_TO_INCENTER_DIST_2 = APRIL_TAG_TO_INCENTER_DIST * APRIL_TAG_TO_INCENTER_DIST; //in inches
+    private boolean calibratingAxis = false;
 
     public Midbrain(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
@@ -79,6 +80,11 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
     @Override
     public void aprilTagDetectionsFound(ArrayList<AprilTagDetection> aprilTagDetections) {
+        if (calibratingAxis) {
+            //TODO you may cache their location and values, but not react to them.
+            return;
+        }
+
         if (aprilTagDetections == null) {
             outputHandler.clearAll();
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.TEXT, "NO DETECTIONS at "+ (System.currentTimeMillis() - startTime)/1000 );
@@ -185,12 +191,21 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
     @Override
     public void cannotTurnLeft() {
+        if (calibratingAxis) {
+            shootingMgr.aim(-1, -100);
+            return;
+        }
         outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.TEXT, "Couldn't turn left");
         //TODO turn robot to left on its wheels
     }
 
     @Override
     public void cannotTurnRight() {
+        if (calibratingAxis) {
+            shootingMgr.aim(-1, 0);
+            calibratingAxis = false;
+            return;
+        }
         outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.TEXT, "Couldn't turn right");
         //TODO turn robot to right on its wheels
     }
@@ -237,11 +252,13 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         if (shootingMgr != null) {
             shootingMgr.start();
         }
+        calibrate();
     }
 
     public void calibrate() {
+        calibratingAxis = true;
         if (shootingMgr != null) {
-            shootingMgr.calibrate();
+            shootingMgr.aim(-1, 100);
         }
     }
 }
