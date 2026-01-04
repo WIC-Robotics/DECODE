@@ -47,9 +47,9 @@ public class AtlasMgr {
 //                System.out.print("AtlasAtlas targetTheta= " + targetTheta_deg + " dTheta= "+ dTheta / 10+" power= "); //TODO undo temp
                 if(Math.abs(dTheta) > EPSILON){
                     atlasServo.setPower(Range.clip(dTheta / 10, -1, 1));
-                    System.out.print(dTheta);
+//                    System.out.print(dTheta);
                 }else{
-                    System.out.print("----");
+//                    System.out.print("----");
                     atlasServo.setPower(0);
                 }
                 System.out.println();
@@ -114,11 +114,6 @@ public class AtlasMgr {
         EPSILON = confMgr.getDouble(this, "EPSILON");
 
         //TODO find min and max power, save them, and simplify the calculations
-//        atlasToServoGearRatio = (SERVO_END_ANGLE - SERVO_START_ANGLE) / (ATLAS_END_ANGLE - ATLAS_START_ANGLE);
-
-        this.continousMovementThread.startThread();
-
-//        KP = confMgr.getDouble(this, "KP");
     }
 
     //TODO use the calibrateAtlas() function in a <B>ConfigureAndCalibrate<//B> OpMode.
@@ -156,5 +151,9 @@ public class AtlasMgr {
      */
     public void gazeUpBy_deg(double dTheta) {
         gazeUpTo_deg(targetTheta_deg + dTheta);
+    }
+
+    public void start() {
+        this.continousMovementThread.startThread();
     }
 }

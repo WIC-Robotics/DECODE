@@ -44,14 +44,15 @@ public class ConfMgr {
     private static Boolean demo = null;
 
     private ConfMgr() {
-
         Context context = AppContextProvider.getAppContext();
         if(context == null)
-            throw new IllegalStateException("AppContext must be set before any attempt to use ConfMgr. Maybe you forgot to write \"AppContextProvider.setAppContext(hardwareMap.appContext);\" in the beginning of your activity init() function");
+            throw new IllegalStateException("AppContext must be set before any attempt to use ConfMgr." +
+                    " Maybe you forgot to write \"AppContextProvider.setAppContext(hardwareMap.appContext);\"" +
+                    " in the beginning of your activity init() function");
         String serial = Build.SERIAL; //TODO find a better way to get serial #
         int internalSettingsFileId;
         System.out.println("deviceSerial = " + serial);
-        File wicFolder = getWicFolder();
+        File wicFolder = FileMgr.getWicFolder();
         File confFile = new File(wicFolder, "conf"+robotName.get(serial)+".txt");
 
         if (!wicFolder.exists()){
@@ -90,12 +91,6 @@ public class ConfMgr {
             System.out.println("could not read config file because of exception");
             throw new RuntimeException(e);
         }
-    }
-
-    @NonNull
-    static File getWicFolder() {
-        File externalStorageDirectory = Environment.getExternalStorageDirectory();
-        return new File(externalStorageDirectory, "WICFolder");
     }
 
     public static ConfMgr getInstance(){

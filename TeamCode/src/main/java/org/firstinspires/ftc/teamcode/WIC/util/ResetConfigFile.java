@@ -14,7 +14,7 @@ public class ResetConfigFile extends OpMode {
     public void init() {
         AppContextProvider.setAppContext(hardwareMap.appContext);
 
-        File wicFolder = ConfMgr.getWicFolder();
+        File wicFolder = FileMgr.getWicFolder();
         String[] fileNames = wicFolder.list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {

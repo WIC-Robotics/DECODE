@@ -38,13 +38,14 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     public static final double APRIL_TAG_TO_INCENTER_DIST_2 = APRIL_TAG_TO_INCENTER_DIST * APRIL_TAG_TO_INCENTER_DIST; //in inches
 
     public Midbrain(HardwareMap hardwareMap, Telemetry telemetry) {
+        this.hardwareMap = hardwareMap;
+        AppContextProvider.setAppContext(this.hardwareMap.appContext);
+
         this.startTime = System.currentTimeMillis();
 
-        this.hardwareMap = hardwareMap;
 //        this.telemetry = telemetry;
         this.outputHandler = new OutputHandler(telemetry);
 
-        AppContextProvider.setAppContext(this.hardwareMap.appContext);
         ConfMgr confMgr = ConfMgr.getInstance();
 
         this.throwErrors = confMgr.getBoolean(this, "throwErrors");
@@ -62,7 +63,6 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         }
 
         this.desiredAprilTagID = Integer.parseInt(confMgr.get(this, "desiredAprilTagID"));
-        this.cameraMgr.startStreaming();
     }
 
     public void startStreaming() {
@@ -210,6 +210,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
             this.cameraMgr.stop();
             this.cameraMgr = null;
         }
+        System.out.println("CameraMgr stopped. trying to stop ShootingMgr");
         if (this.shootingMgr != null) {
             this.shootingMgr.stop();
             this.shootingMgr = null;
@@ -232,6 +233,17 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 //    }
 //    public ContinuousMovementThread continuousMovementThread = new ContinuousMovementThread();
 
+    public void start() {
+        if (shootingMgr != null) {
+            shootingMgr.start();
+        }
+    }
+
+    public void calibrate() {
+        if (shootingMgr != null) {
+            shootingMgr.calibrate();
+        }
+    }
 }
 
 
