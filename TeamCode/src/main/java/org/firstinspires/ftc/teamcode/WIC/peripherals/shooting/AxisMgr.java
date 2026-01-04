@@ -27,10 +27,10 @@ public class AxisMgr {
 //    private final double ONE_OVER_MOTOR_ENCODER_TICKS_PER_REVOLUTION;
 
     public void stop() {
-        continousMovementThread.stopThread();
+        continuousMovementThread.stopThread();
     }
 
-    public class ContinousMovementThread extends Thread{
+    public class ContinuousMovementThread extends Thread /*implements AxisExceptionHandler*/{
         boolean active = false;
 
         public synchronized void startThread() {
@@ -78,6 +78,18 @@ public class AxisMgr {
                 Thread.yield();
             }
         }
+
+//        @Override
+//        public void cannotTurnLeft() {
+//            if (!this.calibrating){
+//                AxisMgr.this.axisExceptionHandler.cannotTurnLeft();
+//            }
+//        }
+//
+//        @Override
+//        public void cannotTurnRight() {
+//
+//        }
     }
 
     public double getCurrentHeadPositionRad() {
@@ -101,7 +113,7 @@ public class AxisMgr {
         return (int) (headAngle_rad * HEAD_ANGLE_RAD_TO_ENCODER_TICKS);
     }
 
-    public ContinousMovementThread continousMovementThread = new ContinousMovementThread();
+    public ContinuousMovementThread continuousMovementThread = new ContinuousMovementThread();
     private AxisExceptionHandler axisExceptionHandler = null;
     double ACCEPTED_ERROR_AT_TARGET;
     /**Accepted heading error in degrees for current distance (from camera lens to April tag).
@@ -129,7 +141,7 @@ public class AxisMgr {
         axisDcMotor.setTargetPosition(0);
         axisDcMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         axisDcMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        axisDcMotor.setPower(1.);
+        axisDcMotor.setPower(0.2);
         axisDcMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         ConfMgr confMgr = ConfMgr.getInstance();
@@ -142,19 +154,33 @@ public class AxisMgr {
         ACCEPTED_ERROR_AT_TARGET = confMgr.getDouble(this, "ACCEPTED_ERROR_AT_TARGET");
         update();
 
-        continousMovementThread.startThread();
+        continuousMovementThread.startThread();
     }
 
     public void calibrate(){
-        //turn all the way to the left (stop when leftBoundSensor is clicked).
-        //save encoder value as leftmostEncoderValue
-        //turn all the way to the right (stop when rightBoundSensor is clicked).
-        //save encoder value as rightmostEncoderValue
+//        calibrating = true;
+//        double v1 = headAngleRadiansToMotorEncoderTicks(100);
+//        System.out.println("AxisAxis calibrate() targeting 100 as " + v1);
+//        turnHeadTo(v1);
+//        while (calibrating) {
+//            System.out.println("AxisAxis going to yield at the left side");
+//            Thread.yield();
+//        }
+//
+//        calibrating = true;
+//        double v2 = headAngleRadiansToMotorEncoderTicks(-100);
+//        System.out.println("AxisAxis calibrate() targeting -100 as " + v2);
+//        turnHeadTo(v2);
+//        while (calibrating) {
+//            System.out.println("AxisAxis going to yield at the right side");
+//            Thread.yield();
+//        }
+//
+//        turnHeadTo(0);
 
         //calculate the time for each degree to go to the next using different power values.
-        update();
-
         //set values in the ConfMgr to save them.
+
     }
     private void update(){
 //        EPSILON = Math.toDegrees(Math.asin(ACCEPTED_ERROR_AT_TARGET/(ApriltagToCenterDistance + cameraTocCenterDistance+ apriltagDistance)));
@@ -210,4 +236,8 @@ public class AxisMgr {
         update();
     }
 
+    public void start() {
+        System.out.println("AtlasAtlas Starting Continuous Movement Thread");
+        continuousMovementThread.startThread();
+    }
 }

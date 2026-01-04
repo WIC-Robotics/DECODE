@@ -18,6 +18,14 @@ public class WheelMgr {
 
     private double RPM_ADJUSTMENT_FACTOR;
 
+    public void start() {
+        this.continousMovementThread.startThread();
+}
+
+    public void calibrate() {
+
+    }
+
     public class ContinousMovementThread extends Thread{
         boolean active = false;
 
@@ -82,8 +90,6 @@ public class WheelMgr {
         MOTOR_MAX_RPM = confMgr.getDouble(this, "MOTOR_MAX_RPM");
         EPSILON = confMgr.getDouble(this, "EPSILON");
         RPM_ADJUSTMENT_FACTOR = confMgr.getDouble(this, "RPM_ADJUSTMENT_FACTOR");
-
-        this.continousMovementThread.startThread();
     }
 
     public void speedupTo(int rpm){

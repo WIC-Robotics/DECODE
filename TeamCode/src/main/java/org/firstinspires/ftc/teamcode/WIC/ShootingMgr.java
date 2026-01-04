@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.AtlasMgr;
 import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.AxisMgr;
 import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.HeadExceptionHandler;
+import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.IntakeMgr;
 import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.WheelMgr;
 import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
 import org.firstinspires.ftc.teamcode.WIC.util.OutputHandler;
@@ -26,6 +27,8 @@ public class ShootingMgr {
     private AtlasMgr atlasMgr;
     private WheelMgr wheelMgr;
     private AxisMgr axisMgr;
+    private IntakeMgr intakeMgr;
+
     public ShootingMgr(HardwareMap hardwareMap, HeadExceptionHandler headExceptionHandler, OutputHandler outputHandler, boolean throwErrors) {
         this.headExceptionHandler = headExceptionHandler;
         this.outputHandler = outputHandler;
@@ -56,6 +59,15 @@ public class ShootingMgr {
                 throw e;
             }
         }
+//        try {
+//            this.intakeMgr = new IntakeMgr(hardwareMap);
+//        } catch (Exception e) {
+//            outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create IntakeMgr!");
+//            if (this.throwErrors) {
+//                throw e;
+//            }
+//        }
+
     }
 
 //    public void gazeUpTo(double theta) {
@@ -85,7 +97,7 @@ public class ShootingMgr {
             atlasMgr.gazeUpTo_deg(targetThetaUp);
         }
 
-        if(wheelMgr != null){
+        if (wheelMgr != null) {
             wheelMgr.speedupTo((int) targetSpeed);
         }
 
@@ -99,32 +111,65 @@ public class ShootingMgr {
     }
 
     public void shoot() {
-        //TODO turn rubber intake
+        intakeMgr.advance();
     }
 
     private double[] findBestWheelAndHoodCombo(double r) { //TODO undo temp
         Random random = new Random();
         double wheelSpeed = 0;
         double hoodAngle = 0;
-        if (!ConfMgr.isDemo()){
+        if (!ConfMgr.isDemo()) {
             wheelSpeed = random.nextDouble();
             hoodAngle = Math.round(random.nextDouble() * 31);
         }
-        return new double[] {wheelSpeed, hoodAngle};
+        return new double[]{wheelSpeed, hoodAngle};
     }
 
     public void stop() {
-        if(atlasMgr != null){
+        if (atlasMgr != null) {
+            System.out.println("going to stop AtlasMgr");
             atlasMgr.stop();
             atlasMgr = null;
         }
         if (axisMgr != null) {
+            System.out.println("going to stop AxisMgr");
             axisMgr.stop();
             axisMgr = null;
         }
         if (wheelMgr != null) {
+            System.out.println("going to stop WheelMgr");
             wheelMgr.stop();
             wheelMgr = null;
+        }
+    }
+
+    public void start() {
+//        if (axisMgr != null) {
+//            axisMgr.start();
+//        }
+        if (atlasMgr != null) {
+            atlasMgr.start();
+        }
+        if (wheelMgr != null) {
+            wheelMgr.start();
+        }
+        if (intakeMgr != null) {
+            intakeMgr.start();
+        }
+    }
+
+    public void calibrate() {
+        if (axisMgr != null) {
+            axisMgr.calibrate();
+        }
+        if (atlasMgr != null) {
+            atlasMgr.calibrateAtlas();
+        }
+        if (wheelMgr != null) {
+            wheelMgr.calibrate();
+        }
+        if (intakeMgr != null) {
+            intakeMgr.calibrate();
         }
     }
 }

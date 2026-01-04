@@ -237,8 +237,8 @@ public final class TankDrive {
         // TODO: make sure your config has motors with these names (or change them)
         //   add additional motors on each side if you have them
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        leftMotors = Arrays.asList(hardwareMap.get(DcMotorEx.class, "front left"), hardwareMap.get(DcMotorEx.class, "backleft"));
-        rightMotors = Arrays.asList(hardwareMap.get(DcMotorEx.class, "front right"), hardwareMap.get(DcMotorEx.class, "backright"));
+        leftMotors = Arrays.asList(hardwareMap.get(DcMotorEx.class, "front left"), hardwareMap.get(DcMotorEx.class, "back left"));
+        rightMotors = Arrays.asList(hardwareMap.get(DcMotorEx.class, "front right"), hardwareMap.get(DcMotorEx.class, "back right"));
 
         for (DcMotorEx m : leftMotors) {
             m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -257,7 +257,7 @@ public final class TankDrive {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new DriveLocalizer(pose);
+        localizer = new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose);
 
         FlightRecorder.write("TANK_PARAMS", PARAMS);
     }
