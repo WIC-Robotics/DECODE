@@ -23,7 +23,7 @@ public class CalibrateShooting extends OpMode implements ShootingExceptionHandle
     private boolean tooClose;
 
     {
-        alternatives.add(new Object[]{0.f, 5.f, 10.f, 15.f, 20.f, 25.f, 30.f});
+        alternatives.add(new Object[]{0.f, 5.f, 10.f, 15.f, 20.f, 25.f, 29.f});
         alternatives.add(new Object[]{0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000,
                 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000, 5250, 5500, 5750, 6000, 6250, 6500, 6750, 7000});
         alternatives.add(new Object[]{0.2, 0.25, 0.33, 0.5, 0.66, 0.75, 0.8, 1.});
@@ -42,6 +42,9 @@ public class CalibrateShooting extends OpMode implements ShootingExceptionHandle
         AppContextProvider.setAppContext(hardwareMap.appContext);
         atlas = new AtlasMgr(hardwareMap);
         flywheel = new WheelMgr(hardwareMap, this);
+
+        atlas.start();
+        flywheel.start();
     }
 
     @Override

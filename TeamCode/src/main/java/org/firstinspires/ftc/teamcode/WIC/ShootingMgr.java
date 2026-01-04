@@ -87,7 +87,9 @@ public class ShootingMgr {
             axisMgr.turnHeadTo(theta);
         }
 
-        System.out.println(".............." + r);
+//        System.out.println("r = .............." + r);
+        if (r < 0)
+            return;
         //TODO find the gazeUp and wheelSpeed best for r, guided by PatternTracker and AxisManager
         double[] combo = findBestWheelAndHoodCombo(r);
         double targetThetaUp = combo[1], targetSpeed = combo[0]; //TODO temp values
@@ -144,9 +146,9 @@ public class ShootingMgr {
     }
 
     public void start() {
-//        if (axisMgr != null) {
-//            axisMgr.start();
-//        }
+        if (axisMgr != null) {
+            axisMgr.start();
+        }
         if (atlasMgr != null) {
             atlasMgr.start();
         }
@@ -158,18 +160,18 @@ public class ShootingMgr {
         }
     }
 
-    public void calibrate() {
-        if (axisMgr != null) {
-            axisMgr.calibrate();
-        }
-        if (atlasMgr != null) {
-            atlasMgr.calibrateAtlas();
-        }
-        if (wheelMgr != null) {
-            wheelMgr.calibrate();
-        }
-        if (intakeMgr != null) {
-            intakeMgr.calibrate();
-        }
-    }
+//    public void calibrate() {
+//        if (axisMgr != null) {
+//            axisMgr.calibrate();
+//        }
+//        if (atlasMgr != null) {
+//            atlasMgr.calibrateAtlas();
+//        }
+//        if (wheelMgr != null) {
+//            wheelMgr.calibrate();
+//        }
+//        if (intakeMgr != null) {
+//            intakeMgr.calibrate();
+//        }
+//    }
 }

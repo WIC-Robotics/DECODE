@@ -11,17 +11,21 @@ import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
 public class Cortex extends OpMode {
 
     Midbrain midbrain = null;
+    private boolean notStarted = true;
 
     @Override
     public void init() {
         this.midbrain = new Midbrain(hardwareMap, telemetry);
         this.midbrain.startStreaming();
-        this.midbrain.start();
-//        this.midbrain.calibrate();
     }
 
     @Override
     public void loop() {
+        if(notStarted){
+            this.midbrain.start();
+            notStarted = false;
+        }
+
         //TODO receive user's input
         Gamepad gp = ConfMgr.getInstance().getInt(this, "mainGamepadUser") == 0 ? gamepad1 : gamepad2;
 

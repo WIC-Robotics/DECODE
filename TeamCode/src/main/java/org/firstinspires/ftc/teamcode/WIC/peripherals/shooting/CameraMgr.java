@@ -114,9 +114,9 @@ public class CameraMgr {
 
         public synchronized void startThread() {
             moreWork = true;
-            System.out.println("Starting Thread");
+            System.out.println("Starting Camera Thread");
             super.start();
-            System.out.println("Thread Started");
+            System.out.println("Camera Thread Started");
         }
 
         @Override
