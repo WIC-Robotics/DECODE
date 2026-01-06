@@ -110,7 +110,7 @@ public class AxisMgr {
         axisDcMotor.setTargetPosition(0);
         axisDcMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         axisDcMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        axisDcMotor.setPower(0.4);
+        axisDcMotor.setPower(0.3);
         axisDcMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         leftmostEncoderValue = confMgr.getInt(this, "LEFTMOST_ENCODER_VALUE");

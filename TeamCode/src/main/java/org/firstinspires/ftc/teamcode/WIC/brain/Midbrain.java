@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.WIC.brain;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.WIC.PatternTracker;
 import org.firstinspires.ftc.teamcode.WIC.ShootingMgr;
 import org.firstinspires.ftc.teamcode.WIC.util.AppContextProvider;
 import org.firstinspires.ftc.teamcode.WIC.util.AprilTagDetectionListener;
@@ -255,11 +256,37 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         calibrate();
     }
 
+    public void gazeUpTo_deg(double targetTheta) {
+        shootingMgr.gazeUpTo_deg(targetTheta);
+    }
+
+    public void gazeUpBy_deg(double dTheta) {
+        shootingMgr.gazeUpBy_deg(dTheta);
+    }
+
     public void calibrate() {
         calibratingAxis = true;
         if (shootingMgr != null) {
             shootingMgr.aim(-1, 100);
         }
+    }
+
+    public void shoot() {
+        //TODO wait until everything is ready
+        shootingMgr.shoot();
+        PatternTracker.getInstance().advance();
+    }
+
+    public void toggleIntake() {
+        shootingMgr.toggleIntake();
+    }
+
+    public void speedupTo(int rpm) {
+        shootingMgr.speedupTo(rpm);
+    }
+
+    public void drive(double translation, double rotation) {
+
     }
 }
 

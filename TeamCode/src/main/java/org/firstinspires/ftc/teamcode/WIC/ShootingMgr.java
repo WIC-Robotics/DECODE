@@ -59,6 +59,14 @@ public class ShootingMgr {
                 throw e;
             }
         }
+        try {
+            this.intakeMgr = new IntakeMgr(hardwareMap);
+        } catch (Exception e) {
+            outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.ERR, "can't create IntakeMgr!");
+            if (this.throwErrors) {
+                throw e;
+            }
+        }
 //        try {
 //            this.intakeMgr = new IntakeMgr(hardwareMap);
 //        } catch (Exception e) {
@@ -118,8 +126,8 @@ public class ShootingMgr {
 
     private double[] findBestWheelAndHoodCombo(double r) { //TODO undo temp
         Random random = new Random();
-        double wheelSpeed = 0;
-        double hoodAngle = 0;
+        double wheelSpeed = 4000;
+        double hoodAngle = 25;
         if (!ConfMgr.isDemo()) {
             wheelSpeed = random.nextDouble();
             hoodAngle = Math.round(random.nextDouble() * 31);
@@ -143,6 +151,11 @@ public class ShootingMgr {
             wheelMgr.stop();
             wheelMgr = null;
         }
+        if (intakeMgr != null) {
+            System.out.println("going to stop IntakeMgr");
+            intakeMgr.stop();
+            intakeMgr = null;
+        }
     }
 
     public void start() {
@@ -158,6 +171,22 @@ public class ShootingMgr {
         if (intakeMgr != null) {
             intakeMgr.start();
         }
+    }
+
+    public void speedupTo(int rpm) {
+        wheelMgr.speedupTo(rpm);
+    }
+
+    public void gazeUpTo_deg(double targetTheta) {
+        atlasMgr.gazeUpTo_deg(targetTheta);
+    }
+
+    public void gazeUpBy_deg(double dTheta) {
+        atlasMgr.gazeUpBy_deg(dTheta);
+    }
+
+    public void toggleIntake() {
+        intakeMgr.toggleIntake();
     }
 
 //    public void calibrate() {
