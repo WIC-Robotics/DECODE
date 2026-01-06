@@ -51,13 +51,13 @@ public class IntakeMgr {
 
     public void start() {
         if (stage1 != null) {
-            stage1.setPower(1);
+            stage1.setPower(STAGE_1_MAX_POWER);
         }
     }
 
     public void stop() {
         if (stage1 != null) {
-            stage1.setPower(0);
+            stage1.setPower(STAGE_1_MIN_POWER);
         }
         if (stage2 != null) {
             stage2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

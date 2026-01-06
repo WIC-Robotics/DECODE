@@ -24,7 +24,7 @@ public class PatternTracker {
         this.matchPattern = matchPattern;
     }
 
-    private int[] matchPattern = null;
+    private int[] matchPattern = G1; //To avoid nullPointerException
     private int nextArtifactIdx = 0;
 
     public int advance() {

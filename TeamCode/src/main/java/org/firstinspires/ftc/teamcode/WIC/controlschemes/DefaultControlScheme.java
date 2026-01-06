@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
  */
 public abstract class DefaultControlScheme extends ControlScheme implements TwoHandsControl{
 
-    final double maxHoodAngle = 29;
+    final double maxHoodAngle = 28;
     final int maxFlywheelRPM = 3500;
 
     boolean intakeNotAlreadyPressed = true;
@@ -72,6 +72,8 @@ public abstract class DefaultControlScheme extends ControlScheme implements TwoH
         if (unlockShooter) {
             midbrain.speedupTo((int) (maxFlywheelRPM * getRecessiveTrigger(gamepad)));
             midbrain.gazeUpTo_deg(maxHoodAngle * getDominantTrigger(gamepad));
+        }else{
+//            midbrain.gazeUpTo_deg();
         }
 
         return true;
