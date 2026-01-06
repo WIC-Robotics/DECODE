@@ -37,6 +37,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
     public static final double APRIL_TAG_TO_INCENTER_DIST = 7.91; //in inches
     public static final double APRIL_TAG_TO_INCENTER_DIST_2 = APRIL_TAG_TO_INCENTER_DIST * APRIL_TAG_TO_INCENTER_DIST; //in inches
+    PatternTracker patternTracker = PatternTracker.getInstance();
     private boolean calibratingAxis = false;
 
     public Midbrain(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -81,10 +82,6 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
     @Override
     public void aprilTagDetectionsFound(ArrayList<AprilTagDetection> aprilTagDetections) {
-        if (calibratingAxis) {
-            //TODO you may cache their location and values, but not react to them.
-            return;
-        }
 
         if (aprilTagDetections == null) {
             outputHandler.clearAll();
@@ -127,11 +124,29 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         AprilTagDetection desiredAprilTag = null;
 
         for (AprilTagDetection detection : aprilTagDetections) {
-            if (detection.id == desiredAprilTagID) {
-                desiredAprilTag = detection;
-                break;
+            int detectionId = detection.id;
+            switch (detectionId){
+                case 20:
+                case 24:
+                    if (detectionId == desiredAprilTagID) {
+                        desiredAprilTag = detection;
+                        break;
+                    }
+                    break;
+                case 21:
+                    patternTracker.setMatchPattern(PatternTracker.G1);
+                    break;
+                case 22:
+                    patternTracker.setMatchPattern(PatternTracker.G2);
+                    break;
+                case 23:
+                    patternTracker.setMatchPattern(PatternTracker.G3);
+                    break;
             }
         }
+
+        //TODO use any detected Apriltags to localize yourself.
+        // You may cache their location and values, but not react to them.
 
         if (desiredAprilTag == null)
             return;
@@ -157,6 +172,10 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 //        double lensToApriltagHorizontalDist = Math.sqrt(lensToApriltagHorizontalDist2);
 //        System.out.println("lensToApriltagHorizontalDist2 = " + Math.sqrt(lensToApriltagHorizontalDist2));
 
+
+        if (calibratingAxis) {
+            return;
+        }
         double internal_angle_c = Math.PI - yaw;
 //        System.out.println("internal_angle_c = " + Math.toDegrees(internal_angle_c));
 
@@ -253,7 +272,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         if (shootingMgr != null) {
             shootingMgr.start();
         }
-        calibrate();
+        initAxisCalibration();
     }
 
     public void gazeUpTo_deg(double targetTheta) {
@@ -264,7 +283,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         shootingMgr.gazeUpBy_deg(dTheta);
     }
 
-    public void calibrate() {
+    public void initAxisCalibration() {
         calibratingAxis = true;
         if (shootingMgr != null) {
             shootingMgr.aim(-1, 100);
