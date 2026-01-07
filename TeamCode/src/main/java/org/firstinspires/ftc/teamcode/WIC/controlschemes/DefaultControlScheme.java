@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.WIC.brain.Midbrain;
 import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents first ergonomic trial.<br>
@@ -27,12 +29,16 @@ import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
  */
 public abstract class DefaultControlScheme extends ControlScheme implements TwoHandsControl{
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultControlScheme.class);
     final double maxHoodAngle = 28;
     final int maxFlywheelRPM = 3500;
 
     boolean intakeNotAlreadyPressed = true;
 
     boolean shootNotAlreadyPressed = true;
+
+    boolean turnAxisLeft = true;
+    boolean turnAxisRight = true;
 
 
     /**
@@ -64,8 +70,16 @@ public abstract class DefaultControlScheme extends ControlScheme implements TwoH
             intakeNotAlreadyPressed = true;
         }
 
-        double translation = -getRecessiveStickY(gamepad, this);
-        double rotation = -getRecessiveStickX(gamepad, this);
+        double axisOffset = Math.toRadians(1);
+        if (gamepad.left_bumper) {
+            midbrain.turnHeadBy(axisOffset);
+        } else if (gamepad.right_bumper) {
+            midbrain.turnHeadBy(-axisOffset);
+        }
+
+
+        double translation = -getRecessiveStickX(gamepad, this);
+        double rotation = -getRecessiveStickY(gamepad, this);
         midbrain.drive(translation, rotation);
 
         boolean unlockShooter = getDominantStickButton(gamepad);
