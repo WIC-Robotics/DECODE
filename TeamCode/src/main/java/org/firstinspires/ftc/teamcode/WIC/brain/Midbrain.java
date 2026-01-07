@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.WIC.PatternTracker;
 import org.firstinspires.ftc.teamcode.WIC.ShootingMgr;
+import org.firstinspires.ftc.teamcode.WIC.peripherals.movement.MovementMgr;
 import org.firstinspires.ftc.teamcode.WIC.util.AppContextProvider;
 import org.firstinspires.ftc.teamcode.WIC.util.AprilTagDetectionListener;
 import org.firstinspires.ftc.teamcode.WIC.peripherals.shooting.CameraMgr;
@@ -39,6 +40,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     public static final double APRIL_TAG_TO_INCENTER_DIST_2 = APRIL_TAG_TO_INCENTER_DIST * APRIL_TAG_TO_INCENTER_DIST; //in inches
     PatternTracker patternTracker = PatternTracker.getInstance();
     private boolean calibratingAxis = false;
+    private MovementMgr movementMgr;
 
     public Midbrain(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
@@ -57,12 +59,25 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
             this.cameraMgr = new CameraMgr(this.hardwareMap, this);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.WARN, "can't create Camera Manager");
+            if (throwErrors) {
+                throw e;
+            }
         }
         try {
             this.shootingMgr = new ShootingMgr(this.hardwareMap, this, outputHandler, throwErrors);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.WARN, "can't create Shooting Manager altogether");
-            throw e;
+            if (throwErrors) {
+                throw e;
+            }
+        }
+        try {
+            this.movementMgr = new MovementMgr(this.hardwareMap);
+        } catch (Exception e) {
+            outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.WARN, "can't create Movement Manager");
+            if (throwErrors) {
+                throw e;
+            }
         }
 
         this.desiredAprilTagID = Integer.parseInt(confMgr.get(this, "desiredAprilTagID"));
@@ -245,10 +260,15 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
             this.cameraMgr.stop();
             this.cameraMgr = null;
         }
-        System.out.println("CameraMgr stopped. trying to stop ShootingMgr");
+        System.out.println("CameraMgr stopped. Trying to stop ShootingMgr");
         if (this.shootingMgr != null) {
             this.shootingMgr.stop();
             this.shootingMgr = null;
+        }
+        System.out.println("ShootingMgr stopped. Trying to stop MovementMgr");
+        if (movementMgr != null) {
+            this.movementMgr.stop();
+            this.movementMgr = null;
         }
     }
 
@@ -272,7 +292,8 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         if (shootingMgr != null) {
             shootingMgr.start();
         }
-        initAxisCalibration();
+//        initAxisCalibration();
+        movementMgr.start();
     }
 
     public void gazeUpTo_deg(double targetTheta) {
@@ -290,6 +311,10 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         }
     }
 
+    public void turnHeadBy(double dTheta) {
+        shootingMgr.turnHeadBy(dTheta);
+    }
+
     public void shoot() {
         //TODO wait until everything is ready
         shootingMgr.shoot();
@@ -305,7 +330,15 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     }
 
     public void drive(double translation, double rotation) {
+        movementMgr.drive(translation, rotation);
+    }
 
+    public double getCurrentHeadPositionRad() {
+        return shootingMgr.getCurrentHeadPositionRad();
+    }
+
+    public void turnHeadTo(double theta) {
+        shootingMgr.turnHeadTo(theta);
     }
 }
 

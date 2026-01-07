@@ -90,6 +90,10 @@ public class ShootingMgr {
         return axisMgr.getCurrentHeadPositionRad();
     }
 
+    public void turnHeadBy(double dTheta) {
+        axisMgr.turnHeadBy(dTheta);
+    }
+
     public void aim(double r, double theta) {
         if (axisMgr != null) {
             axisMgr.turnHeadTo(theta);
@@ -156,6 +160,10 @@ public class ShootingMgr {
             intakeMgr.stop();
             intakeMgr = null;
         }
+    }
+
+    public void turnHeadTo(double theta) {
+        axisMgr.turnHeadTo(theta);
     }
 
     public void start() {
