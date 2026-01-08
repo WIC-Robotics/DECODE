@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @Autonomous(name = "Autonomous Script")
 public class AutonomousNS extends OpMode {
+    Midbrain midbrain = null;
 
     @Override
     public void init() {
