@@ -30,8 +30,14 @@ import org.slf4j.LoggerFactory;
 public abstract class DefaultControlScheme extends ControlScheme implements TwoHandsControl{
 
     private static final Logger log = LoggerFactory.getLogger(DefaultControlScheme.class);
-    final double maxHoodAngle = 28;
-    final int maxFlywheelRPM = 3500;
+//    final double maxHoodAngle = 28;
+//    final int maxFlywheelRPM = 3500;
+    float[] hoodAngles = {0.f, 5.f, 10.f, 15.f, 20.f, 25.f, 29.f};
+    int[] flyWheelRMPs= {0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000,
+            3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000, 5250, 5500, 5750, 6000, 6250, 6500, 6750, 7000};
+    int hoodAngleIdx = 0;
+    int flywheelRPMIdx = 0;
+    boolean upNotPressed = true, dnNotPressed = true, ltNotPressed = true, rtNotPressed = true;
 
     boolean intakeNotAlreadyPressed = true;
 
@@ -78,16 +84,59 @@ public abstract class DefaultControlScheme extends ControlScheme implements TwoH
         }
 
 
-        double translation = -getRecessiveStickX(gamepad, this);
+        double translation = -getDominantStickX(gamepad, this);
         double rotation = -getRecessiveStickY(gamepad, this);
         midbrain.drive(translation, rotation, 0);
 
-        boolean unlockShooter = getDominantStickButton(gamepad);
-        if (unlockShooter) {
-            midbrain.speedupTo((int) (maxFlywheelRPM * getRecessiveTrigger(gamepad)));
-            midbrain.gazeUpTo_deg(maxHoodAngle * getDominantTrigger(gamepad));
-        }else{
-//            midbrain.gazeUpTo_deg();
+//        boolean unlockShooter = getDominantStickButton(gamepad);
+//        if (unlockShooter) {
+//            midbrain.speedupTo((int) (maxFlywheelRPM * getRecessiveTrigger(gamepad)));
+//            midbrain.gazeUpTo_deg(maxHoodAngle * getDominantTrigger(gamepad));
+//        }else{
+////            midbrain.gazeUpTo_deg();
+//        }
+        if (gamepad.dpad_left){
+            if(ltNotPressed) {
+                flywheelRPMIdx--;
+                flywheelRPMIdx += flyWheelRMPs.length;
+                flywheelRPMIdx %= flyWheelRMPs.length;
+                midbrain.speedupTo(flyWheelRMPs[flywheelRPMIdx]);
+                ltNotPressed = false;
+            }
+        } else{
+            ltNotPressed = true;
+        }
+        if (gamepad.dpad_right){
+            if (rtNotPressed) {
+                flywheelRPMIdx++;
+                flywheelRPMIdx %= flyWheelRMPs.length;
+                midbrain.speedupTo(flyWheelRMPs[flywheelRPMIdx]);
+                rtNotPressed = false;
+            }
+        } else {
+            rtNotPressed = true;
+        }
+
+        if (gamepad.dpad_up){
+            if (upNotPressed){
+                hoodAngleIdx++;
+                hoodAngleIdx %= hoodAngles.length;
+                midbrain.gazeUpTo_deg(hoodAngles[hoodAngleIdx]);
+                upNotPressed = false;
+            }
+        } else {
+            upNotPressed = true;
+        }
+        if(gamepad.dpad_down){
+            if (dnNotPressed) {
+                hoodAngleIdx--;
+                hoodAngleIdx += hoodAngles.length;
+                hoodAngleIdx %= hoodAngles.length;
+                midbrain.gazeUpTo_deg(hoodAngles[hoodAngleIdx]);
+                dnNotPressed= false;
+            }
+        } else {
+            dnNotPressed = true;
         }
 
         return true;

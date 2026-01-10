@@ -53,7 +53,7 @@ public class IntakeMgr {
 
     public void start() {
         if (intake != null) {
-            intake.setPower(STAGE_1_MAX_POWER);
+            updatePower();
         }
     }
 
@@ -75,6 +75,10 @@ public class IntakeMgr {
 
     public void toggleIntake() {
         intakeOn = !intakeOn;
+        updatePower();
+    }
+
+    private void updatePower() {
         intake.setPower(intakeOn ? STAGE_1_MAX_POWER : STAGE_1_MIN_POWER);
     }
 
