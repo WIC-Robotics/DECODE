@@ -231,7 +231,8 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
             return;
         }
         outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.TEXT, "Couldn't turn left");
-        //TODO turn robot to left on its wheels
+        // turn robot to left on its wheels
+        movementMgr.drive(0.,0., 0.1);
     }
 
     @Override
@@ -242,7 +243,8 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
             return;
         }
         outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.TEXT, "Couldn't turn right");
-        //TODO turn robot to right on its wheels
+        // turn robot to right on its wheels
+        movementMgr.drive(0.,0., -0.1);
     }
 
     @Override
@@ -329,8 +331,8 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         shootingMgr.speedupTo(rpm);
     }
 
-    public void drive(double translation, double rotation) {
-        movementMgr.drive(translation, rotation);
+    public void drive(double translation, double rotation, double extraRotation) {
+        movementMgr.drive(translation, rotation, extraRotation);
     }
 
     public double getCurrentHeadPositionRad() {

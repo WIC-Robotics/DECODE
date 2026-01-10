@@ -12,10 +12,10 @@ public class MovementMgr {
         this.deadwheelMgr = new DeadwheelMgr(hardwareMap);
     }
 
-    public void drive(double translation, double rotation) {
+    public void drive(double translation, double rotation, double extraRotation) {
         //TODO use roadrunner
         //TODO use Pinpoint Odometry Computer
-        drivetrainMgr.drive(translation, rotation);
+        drivetrainMgr.drive(translation, rotation, extraRotation);
 
     }
 
