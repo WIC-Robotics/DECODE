@@ -14,7 +14,9 @@ public class DeadwheelMgr {
     public void stop() {}
 
     public void start() {
-        assert pinpoint.getDeviceStatus() == GoBildaPinpointDriver.DeviceStatus.READY;
+        while (pinpoint.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
+            System.out.println("Device status = "+pinpoint.getDeviceStatus()+", waiting for the pinpoint device");
+        }
     }
 
     public DeadwheelMgr(HardwareMap hardwareMap) {
@@ -22,7 +24,7 @@ public class DeadwheelMgr {
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         ConfMgr confMgr = ConfMgr.getInstance();
         pinpoint.setOffsets(confMgr.getDouble(this, "xOffset"), confMgr.getDouble(this, "yOffset"), DistanceUnit.INCH);
-        pinpoint.resetPosAndIMU();
+//        pinpoint.resetPosAndIMU();
         pinpoint.initialize();
     }
 

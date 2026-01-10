@@ -129,14 +129,15 @@ public class ShootingMgr {
     }
 
     private double[] findBestWheelAndHoodCombo(double r) { //TODO undo temp
-        Random random = new Random();
-        double wheelSpeed = 4000;
-        double hoodAngle = 25;
-        if (!ConfMgr.isDemo()) {
-            wheelSpeed = random.nextDouble();
-            hoodAngle = Math.round(random.nextDouble() * 31);
-        }
-        return new double[]{wheelSpeed, hoodAngle};
+//        Random random = new Random();
+//        double wheelSpeed = 4000;
+//        double hoodAngle = 25;
+//        if (!ConfMgr.isDemo()) {
+//            wheelSpeed = random.nextDouble();
+//            hoodAngle = Math.round(random.nextDouble() * 31);
+//        }
+//        return new double[]{wheelSpeed, hoodAngle};
+        return new double[]{2500, 25};
     }
 
     public void stop() {

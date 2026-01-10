@@ -28,8 +28,8 @@ public class MovementMgr {
         if (drivetrainMgr != null) {
             this.drivetrainMgr.start();
         }
-        if (deadwheelMgr != null) {
-            this.deadwheelMgr.start();
-        }
+//        if (deadwheelMgr != null) {
+//            this.deadwheelMgr.start();
+//        }
     }
 }

@@ -58,6 +58,8 @@ public class ConfMgr {
         if (!wicFolder.exists()){
             System.out.println("creating "+wicFolder);
             boolean created = wicFolder.mkdir();
+            wicFolder.setReadable(true, false);
+            wicFolder.setWritable(true, false);
             System.out.println("new folder was "+(created ? "" : "not ") + "created.");
         }
         if (!confFile.exists()){
@@ -101,7 +103,10 @@ public class ConfMgr {
     }
 
     private void createDefaultConfigFile(File externalConfFile, Context context, int resourceId){
-         try {
+        try {
+            externalConfFile.setReadable(true, false);
+            externalConfFile.setWritable(true, false);
+            externalConfFile.createNewFile();
             try (InputStream is = context.getResources().openRawResource(resourceId)) {
                 try (FileOutputStream fileOutputStream = new FileOutputStream(externalConfFile)) {
                     while (is.available() > 0) {
