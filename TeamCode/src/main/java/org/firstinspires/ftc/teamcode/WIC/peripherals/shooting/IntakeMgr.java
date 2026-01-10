@@ -23,10 +23,13 @@ public class IntakeMgr {
         ballIndex = 0;
 
         intake = hardwareMap.get(DcMotorEx.class, "Intake");
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        indexer = hardwareMap.get(DcMotorEx.class, "Indexer");
+        if (intake != null) {
+            intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
 
+        indexer = hardwareMap.get(DcMotorEx.class, "Indexer");
         if (indexer != null) {
+            indexer.setDirection(DcMotorSimple.Direction.REVERSE);
             indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             indexer.setTargetPosition(0);
             indexer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -35,7 +38,7 @@ public class IntakeMgr {
         }
 
         INDEXER_MOTOR_TICKS_PER_REV = ConfMgr.getInstance().getDouble(this, "INDEXER_MOTOR_TICKS_PER_REVOLUTION");
-        INDEXER_STEP_DEG = Math.toRadians(ConfMgr.getInstance().getDouble(this, "INDEXER_STEP_DEG"));
+        INDEXER_STEP_DEG = ConfMgr.getInstance().getDouble(this, "INDEXER_STEP_DEG");
     }
 
     private double stage2AngleDegreesToMotorTicks(double degrees) {
@@ -61,6 +64,7 @@ public class IntakeMgr {
         if (indexer != null) {
             indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             indexer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            indexer.setTargetPosition(0);
         }
         ballIndex = 0;
     }
@@ -72,5 +76,9 @@ public class IntakeMgr {
     public void toggleIntake() {
         intakeOn = !intakeOn;
         intake.setPower(intakeOn ? STAGE_1_MAX_POWER : STAGE_1_MIN_POWER);
+    }
+
+    public void shoot() {
+
     }
 }
