@@ -52,9 +52,9 @@ public class DrivetrainMgr {
 
     }
 
-    public void drive(double translation, double rotation) {
-        double leftPower    = translation - rotation;
-        double rightPower   = translation + rotation;
+    public void drive(double translation, double rotation, double extraRotation) {
+        double leftPower    = translation - rotation - extraRotation;
+        double rightPower   = translation + rotation + extraRotation;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(leftPower), Math.abs(rightPower));

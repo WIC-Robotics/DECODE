@@ -80,7 +80,7 @@ public abstract class DefaultControlScheme extends ControlScheme implements TwoH
 
         double translation = -getRecessiveStickX(gamepad, this);
         double rotation = -getRecessiveStickY(gamepad, this);
-        midbrain.drive(translation, rotation);
+        midbrain.drive(translation, rotation, 0);
 
         boolean unlockShooter = getDominantStickButton(gamepad);
         if (unlockShooter) {
