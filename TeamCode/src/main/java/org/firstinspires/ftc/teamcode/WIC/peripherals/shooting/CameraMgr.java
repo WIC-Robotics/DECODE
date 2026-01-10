@@ -38,15 +38,18 @@ public class CameraMgr {
         this.aprilTagProcessor.setDecimation(2);
 
         CAMERA = hardwareMap.get(WebcamName.class, WEBCAM_NAME);
-        this.visionPortal = buildVisionPortal(CAMERA, this.aprilTagProcessor, 640, 480);
+        this.visionPortal = buildVisionPortal(CAMERA, this.aprilTagProcessor
+//                , 640, 480
+        );
 //        this.visionPortal = buildVisionPortal(BuiltinCameraDirection.BACK, this.aprilTagProcessor); // Use if phone camera
 
         cameraThread = new CameraThread();
     }
 
 
-    private VisionPortal buildVisionPortal(CameraName camera, AprilTagProcessor aprilTagProcessor,
-                                           int width, int height) {
+    private VisionPortal buildVisionPortal(CameraName camera, AprilTagProcessor aprilTagProcessor
+//            , int width, int height
+    ) {
         VisionPortal.Builder VPBuilder = new VisionPortal.Builder()
 
                 .setCamera(camera)

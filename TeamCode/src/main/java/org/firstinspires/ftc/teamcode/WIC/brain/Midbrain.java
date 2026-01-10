@@ -294,8 +294,12 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         if (shootingMgr != null) {
             shootingMgr.start();
         }
-//        initAxisCalibration();
-        movementMgr.start();
+
+        initAxisCalibration();
+
+        if (movementMgr != null) {
+            movementMgr.start();
+        }
     }
 
     public void gazeUpTo_deg(double targetTheta) {
@@ -309,7 +313,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     public void initAxisCalibration() {
         calibratingAxis = true;
         if (shootingMgr != null) {
-            shootingMgr.aim(-1, 100);
+            shootingMgr.aim(-1, Math.toRadians(60));
         }
     }
 
