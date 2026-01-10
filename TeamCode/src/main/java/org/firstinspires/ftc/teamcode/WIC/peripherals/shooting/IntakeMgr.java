@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.WIC.peripherals.shooting;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,56 +11,56 @@ public class IntakeMgr {
 
     private final double STAGE_1_MAX_POWER = 1;
     private final double STAGE_1_MIN_POWER = 0;
-    private final double STAGE_2_MOTOR_TICKS_PER_REV;
-    private final double STAGE_2_STEP_DEG;
+    private final double INDEXER_MOTOR_TICKS_PER_REV;
+    private final double INDEXER_STEP_DEG;
     private int ballIndex;
 
-    DcMotorEx stage1;
-    boolean stage1On;
-    DcMotorEx stage2;
+    DcMotorEx intake;
+    boolean intakeOn;
+    DcMotorEx indexer;
 
     public IntakeMgr(HardwareMap hardwareMap) {
         ballIndex = 0;
 
-        stage1 = hardwareMap.get(DcMotorEx.class, "Stage 1");
-        stage1.setDirection(DcMotorSimple.Direction.REVERSE);
-        stage2 = hardwareMap.get(DcMotorEx.class, "Stage 2");
+        intake = hardwareMap.get(DcMotorEx.class, "Intake");
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        indexer = hardwareMap.get(DcMotorEx.class, "Indexer");
 
-        if (stage2 != null) {
-            stage2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            stage2.setTargetPosition(0);
-            stage2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            stage2.setPower(1);
-
+        if (indexer != null) {
+            indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            indexer.setTargetPosition(0);
+            indexer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            indexer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            indexer.setPower(1);
         }
 
-        STAGE_2_MOTOR_TICKS_PER_REV = ConfMgr.getInstance().getDouble(this, "STAGE_2_MOTOR_TICKS_PER_REVOLUTION");
-        STAGE_2_STEP_DEG = Math.toRadians(ConfMgr.getInstance().getDouble(this, "STAGE_2_STEP_DEG"));
+        INDEXER_MOTOR_TICKS_PER_REV = ConfMgr.getInstance().getDouble(this, "INDEXER_MOTOR_TICKS_PER_REVOLUTION");
+        INDEXER_STEP_DEG = Math.toRadians(ConfMgr.getInstance().getDouble(this, "INDEXER_STEP_DEG"));
     }
 
     private double stage2AngleDegreesToMotorTicks(double degrees) {
-        return (degrees * STAGE_2_MOTOR_TICKS_PER_REV) / 360;
+        return (degrees * INDEXER_MOTOR_TICKS_PER_REV) / 360;
     }
 
     public void advance() {
-        if (stage2 != null) {
-            stage2.setTargetPosition((int) stage2AngleDegreesToMotorTicks(++ballIndex * STAGE_2_STEP_DEG));
+        if (indexer != null) {
+            indexer.setTargetPosition((int) stage2AngleDegreesToMotorTicks(++ballIndex * INDEXER_STEP_DEG));
         }
     }
 
     public void start() {
-        if (stage1 != null) {
-            stage1.setPower(STAGE_1_MAX_POWER);
+        if (intake != null) {
+            intake.setPower(STAGE_1_MAX_POWER);
         }
     }
 
     public void stop() {
-        if (stage1 != null) {
-            stage1.setPower(STAGE_1_MIN_POWER);
+        if (intake != null) {
+            intake.setPower(STAGE_1_MIN_POWER);
         }
-        if (stage2 != null) {
-            stage2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            stage2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (indexer != null) {
+            indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            indexer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         ballIndex = 0;
     }
@@ -71,7 +70,7 @@ public class IntakeMgr {
     }
 
     public void toggleIntake() {
-        stage1On = !stage1On;
-        stage1.setPower(stage1On ? STAGE_1_MAX_POWER : STAGE_1_MIN_POWER);
+        intakeOn = !intakeOn;
+        intake.setPower(intakeOn ? STAGE_1_MAX_POWER : STAGE_1_MIN_POWER);
     }
 }
