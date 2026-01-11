@@ -27,6 +27,11 @@ public class Cortex extends OpMode {
         confMgr = ConfMgr.getInstance();
         gpGamepad = confMgr.getInt(this, "mainGamepadUser") == 0 ? gamepad1 : gamepad2;
         controlScheme = new DefaultControlScheme.RightHandedDefaultControlScheme();
+        Object alliance = blackboard.get("Alliance");
+        if (alliance == null) {
+            throw new RuntimeException("SET THE ALLIANCE COLOR USING THE SET ALLIANCE OpMode");
+        }
+        midbrain.setAlliance(alliance.toString());
     }
 
     @Override

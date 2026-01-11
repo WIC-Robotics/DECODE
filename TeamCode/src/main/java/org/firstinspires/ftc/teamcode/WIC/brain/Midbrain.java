@@ -16,6 +16,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 
 import java.util.ArrayList;
+import java.util.concurrent.FutureTask;
 
 /**
  * It is assumed that the distance unit used everywhere is the INCH. If you find anything else,
@@ -23,7 +24,7 @@ import java.util.ArrayList;
  */
 public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler {
 
-    private final int desiredAprilTagID;
+    private int desiredAprilTagID;
     private final boolean throwErrors;
     private HardwareMap hardwareMap;
     //    private Telemetry telemetry;
@@ -41,6 +42,8 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     PatternTracker patternTracker = PatternTracker.getInstance();
     private boolean calibratingAxis = false;
     private MovementMgr movementMgr;
+    private String alliance;
+    private boolean autoAim;
 
     public Midbrain(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
@@ -80,7 +83,14 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
             }
         }
 
-        this.desiredAprilTagID = Integer.parseInt(confMgr.get(this, "desiredAprilTagID"));
+        if ("RED".equals(alliance)) {
+            this.desiredAprilTagID = 24;
+        }
+        if ("BLUE".equals(alliance)) {
+            this.desiredAprilTagID = 20;
+        } else {
+            this.desiredAprilTagID = Integer.parseInt(confMgr.get(this, "desiredAprilTagID"));
+        }
     }
 
     public void startStreaming() {
@@ -141,8 +151,8 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         for (AprilTagDetection detection : aprilTagDetections) {
             int detectionId = detection.id;
             switch (detectionId){
-                case 20:
-                case 24:
+                case 20: //blue
+                case 24: //red
                     if (detectionId == desiredAprilTagID) {
                         desiredAprilTag = detection;
                         break;
@@ -216,11 +226,12 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
                 shootingMgr.aim(newAngle, targetTheta);
                 lastTargetAngleAtlas = newAngle;
             }
-        }else{
+        } else {
             System.out.println("targetTheta B4 aim=\t" + Math.toDegrees(targetTheta));
             System.out.printf("AprilTag yaw= %f\tbearing= %f\tangleA= %f\ttargetTheta= %f\n",
                     Math.toDegrees(yaw), Math.toDegrees(bearing),Math.toDegrees(angleA) ,Math.toDegrees(targetTheta));
-            shootingMgr.aim(distToTarget, targetTheta);
+//            shootingMgr.aim(distToTarget, targetTheta);
+            shootingMgr.aim(-1, targetTheta); //temp
         }
     }
 
@@ -337,6 +348,11 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
     public void drive(double translation, double rotation, double extraRotation) {
         movementMgr.drive(translation, rotation, extraRotation);
+//        return new FutureTask<>(this::drive)
+    }
+
+    public void driveTo(double x, double y, double heading) {
+        movementMgr.driveTo(x, y, heading);
     }
 
     public double getCurrentHeadPositionRad() {
@@ -345,6 +361,18 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
     public void turnHeadTo(double theta) {
         shootingMgr.turnHeadTo(theta);
+    }
+
+    public void setAlliance(String alliance) {
+        this.alliance = alliance;
+    }
+
+    public void setAutoAim(boolean autoAim) {
+        this.autoAim = autoAim;
+    }
+
+    public void aim(double r, double theta) {
+        shootingMgr.aim(r, theta);
     }
 }
 

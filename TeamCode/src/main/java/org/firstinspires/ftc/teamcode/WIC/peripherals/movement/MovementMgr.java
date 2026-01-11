@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.WIC.peripherals.movement;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 public class MovementMgr {
 
     private DrivetrainMgr drivetrainMgr;
@@ -28,8 +30,16 @@ public class MovementMgr {
         if (drivetrainMgr != null) {
             this.drivetrainMgr.start();
         }
-//        if (deadwheelMgr != null) {
-//            this.deadwheelMgr.start();
-//        }
+        if (deadwheelMgr != null) {
+            this.deadwheelMgr.start();
+        }
+    }
+
+    public Pose2D getCurrentPosition() {
+        return deadwheelMgr.getCurrentPosition();
+    }
+
+    public void driveTo(double x, double y, double heading) {
+        drivetrainMgr.driveTo(x, y, heading);
     }
 }

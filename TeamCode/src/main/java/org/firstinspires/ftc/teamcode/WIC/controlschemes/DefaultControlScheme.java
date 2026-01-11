@@ -33,8 +33,9 @@ public abstract class DefaultControlScheme extends ControlScheme implements TwoH
 //    final double maxHoodAngle = 28;
 //    final int maxFlywheelRPM = 3500;
     float[] hoodAngles = {0.f, 5.f, 10.f, 15.f, 20.f, 25.f, 29.f};
-    int[] flyWheelRMPs= {0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000,
-            3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000, 5250, 5500, 5750, 6000, 6250, 6500, 6750, 7000};
+//    int[] flyWheelRMPs= {0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000,
+//            3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000, 5250, 5500, 5750, 6000, 6250, 6500, 6750, 7000};
+    int[] flyWheelRPMs= {0, 500, 1000, 1500, 2000, 2500, 3000};
     int hoodAngleIdx = 0;
     int flywheelRPMIdx = 0;
     boolean upNotPressed = true, dnNotPressed = true, ltNotPressed = true, rtNotPressed = true;
@@ -98,9 +99,9 @@ public abstract class DefaultControlScheme extends ControlScheme implements TwoH
         if (gamepad.dpad_left){
             if(ltNotPressed) {
                 flywheelRPMIdx--;
-                flywheelRPMIdx += flyWheelRMPs.length;
-                flywheelRPMIdx %= flyWheelRMPs.length;
-                midbrain.speedupTo(flyWheelRMPs[flywheelRPMIdx]);
+                flywheelRPMIdx += flyWheelRPMs.length;
+                flywheelRPMIdx %= flyWheelRPMs.length;
+                midbrain.speedupTo(flyWheelRPMs[flywheelRPMIdx]);
                 ltNotPressed = false;
             }
         } else{
@@ -109,8 +110,8 @@ public abstract class DefaultControlScheme extends ControlScheme implements TwoH
         if (gamepad.dpad_right){
             if (rtNotPressed) {
                 flywheelRPMIdx++;
-                flywheelRPMIdx %= flyWheelRMPs.length;
-                midbrain.speedupTo(flyWheelRMPs[flywheelRPMIdx]);
+                flywheelRPMIdx %= flyWheelRPMs.length;
+                midbrain.speedupTo(flyWheelRPMs[flywheelRPMIdx]);
                 rtNotPressed = false;
             }
         } else {

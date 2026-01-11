@@ -100,7 +100,7 @@ public class ShootingMgr {
         }
 
 //        System.out.println("r = .............." + r);
-        if (r < 0)
+        if (r == -1)
             return;
         //TODO find the gazeUp and wheelSpeed best for r, guided by PatternTracker and AxisManager
         double[] combo = findBestWheelAndHoodCombo(r);

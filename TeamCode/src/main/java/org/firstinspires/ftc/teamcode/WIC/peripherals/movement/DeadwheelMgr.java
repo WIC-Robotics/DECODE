@@ -14,16 +14,17 @@ public class DeadwheelMgr {
     public void stop() {}
 
     public void start() {
-        while (pinpoint.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
-            System.out.println("Device status = "+pinpoint.getDeviceStatus()+", waiting for the pinpoint device");
-        }
+//        while (pinpoint.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
+//            System.out.println("Device status = "+pinpoint.getDeviceStatus()+", waiting for the pinpoint device");
+//        }
     }
 
     public DeadwheelMgr(HardwareMap hardwareMap) {
         this.pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,  "pinpoint");
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         ConfMgr confMgr = ConfMgr.getInstance();
-        pinpoint.setOffsets(confMgr.getDouble(this, "xOffset"), confMgr.getDouble(this, "yOffset"), DistanceUnit.INCH);
+        pinpoint.setOffsets(confMgr.getDouble(this, "xOffset"),
+                confMgr.getDouble(this, "yOffset"), DistanceUnit.INCH);
 //        pinpoint.resetPosAndIMU();
         pinpoint.initialize();
     }
@@ -34,6 +35,6 @@ public class DeadwheelMgr {
             pinpoint.update();
             return pinpoint.getPosition();
         }
-        throw new IllegalStateException("I am impressed u got my code to break, but sadly, I cannot allow that");
+        throw new IllegalStateException("I am impressed you got my code to break, but sadly, I cannot allow that");
     }
 }
