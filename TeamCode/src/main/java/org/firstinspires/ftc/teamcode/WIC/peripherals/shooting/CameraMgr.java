@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.WIC.util.AprilTagDetectionListener;
+import org.firstinspires.ftc.teamcode.WIC.util.OutputHandler;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
@@ -22,6 +23,7 @@ public class CameraMgr {
 
     VisionPortal visionPortal;
     AprilTagProcessor aprilTagProcessor;
+    public static enum ApriTagStatus {APRILTAG_OFF, APRILTAG_NOT_DETECTED, APRILTAG_DETECTED_OTHER, APRILTAG_DETECTED_TARGET, APRILTAG_FIXED};
 
     private final String WEBCAM_NAME = "Webcam 1";
     CameraName CAMERA;
@@ -114,6 +116,7 @@ public class CameraMgr {
     public void stop() {
         cameraThread.stopThread();
         visionPortal.stopStreaming();
+        OutputHandler.getInstance().headStatus(CameraMgr.ApriTagStatus.APRILTAG_OFF);
     }
 
     private class CameraThread extends Thread {
@@ -124,6 +127,7 @@ public class CameraMgr {
             System.out.println("Starting Camera Thread");
             super.start();
             System.out.println("Camera Thread Started");
+            OutputHandler.getInstance().headStatus(ApriTagStatus.APRILTAG_NOT_DETECTED);
         }
 
         @Override
@@ -134,7 +138,7 @@ public class CameraMgr {
                 if (moreWork && detections != null) {
                     aprilTagDetectionListener.aprilTagDetectionsFound(detections);
                 } else {
-//                    aprilTagDetectionListener.aprilTagDetectionsFound(null);
+                    aprilTagDetectionListener.aprilTagDetectionsFound(null);
                 }
                 try {
                     Thread.sleep(500);

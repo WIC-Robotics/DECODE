@@ -50,15 +50,16 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         AppContextProvider.setAppContext(this.hardwareMap.appContext);
 
         this.startTime = System.currentTimeMillis();
-
+        //keep the output handler at the top of constructor
 //        this.telemetry = telemetry;
-        this.outputHandler = new OutputHandler(telemetry);
+        this.outputHandler = new OutputHandler(telemetry, hardwareMap);
 
         ConfMgr confMgr = ConfMgr.getInstance();
 
         this.throwErrors = confMgr.getBoolean(this, "throwErrors");
 
         try {
+            outputHandler.headStatus(CameraMgr.ApriTagStatus.APRILTAG_OFF);
             this.cameraMgr = new CameraMgr(this.hardwareMap, this);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.WARN, "can't create Camera Manager");
@@ -109,6 +110,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     public void aprilTagDetectionsFound(ArrayList<AprilTagDetection> aprilTagDetections) {
 
         if (aprilTagDetections == null) {
+            outputHandler.headStatus(CameraMgr.ApriTagStatus.APRILTAG_NOT_DETECTED);
             outputHandler.clearAll();
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.TEXT, "NO DETECTIONS at "+ (System.currentTimeMillis() - startTime)/1000 );
             return;
@@ -147,6 +149,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 //        }
 
         AprilTagDetection desiredAprilTag = null;
+        CameraMgr.ApriTagStatus highestApriTagStatus = CameraMgr.ApriTagStatus.APRILTAG_DETECTED_OTHER;
 
         for (AprilTagDetection detection : aprilTagDetections) {
             int detectionId = detection.id;
@@ -155,6 +158,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
                 case 24: //red
                     if (detectionId == desiredAprilTagID) {
                         desiredAprilTag = detection;
+                        highestApriTagStatus = CameraMgr.ApriTagStatus.APRILTAG_DETECTED_TARGET;
                         break;
                     }
                     break;
@@ -169,6 +173,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
                     break;
             }
         }
+        OutputHandler.getInstance().headStatus(highestApriTagStatus);
 
         //TODO use any detected Apriltags to localize yourself.
         // You may cache their location and values, but not react to them.

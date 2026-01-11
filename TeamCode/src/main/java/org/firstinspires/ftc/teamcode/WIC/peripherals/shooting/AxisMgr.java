@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
+import org.firstinspires.ftc.teamcode.WIC.util.OutputHandler;
 
 /**This class manages the neck left and right movement as if the lazy suzan is looking right or left.
  * The name is analogous to the <B>Axis vertebrum (C2)</B> which articulates with the Atlas vertebum
@@ -69,11 +70,14 @@ public class AxisMgr {
 
 
                 double dTheta = targetTheta - getCurrentHeadPositionRad();
+                //if trying to go within its limit (not past its limit)
                 if(!(
                         (rightBoundSensor.isPressed() && dTheta > HEAD_ANGLE_EPSILON_RAD) ||
                         (leftBoundSensor.isPressed() && -dTheta > HEAD_ANGLE_EPSILON_RAD)
                 )){
                     axisDcMotor.setTargetPosition(headAngleRadiansToMotorEncoderTicks(targetTheta));
+                } else{
+                    OutputHandler.getInstance().headStatus(CameraMgr.ApriTagStatus.APRILTAG_FIXED);
                 }
                 Thread.yield();
             }
