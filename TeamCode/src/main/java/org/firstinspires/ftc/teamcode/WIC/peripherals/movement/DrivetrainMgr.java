@@ -69,4 +69,8 @@ public class DrivetrainMgr {
         BR.setPower(rightPower);
 
     }
+
+    public void driveTo(double x, double y, double heading) {
+
+    }
 }

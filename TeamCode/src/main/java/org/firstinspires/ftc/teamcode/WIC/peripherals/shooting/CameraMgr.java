@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.WIC.peripherals.shooting;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -38,23 +40,25 @@ public class CameraMgr {
         this.aprilTagProcessor.setDecimation(2);
 
         CAMERA = hardwareMap.get(WebcamName.class, WEBCAM_NAME);
-        this.visionPortal = buildVisionPortal(CAMERA, this.aprilTagProcessor
-//                , 640, 480
+        this.visionPortal = buildVisionPortal(CAMERA, this.aprilTagProcessor, VisionPortal.StreamFormat.MJPEG
+                , 1280, 720
         );
 //        this.visionPortal = buildVisionPortal(BuiltinCameraDirection.BACK, this.aprilTagProcessor); // Use if phone camera
 
         cameraThread = new CameraThread();
+        this.aprilTagProcessor.setDecimation(3);
     }
 
 
-    private VisionPortal buildVisionPortal(CameraName camera, AprilTagProcessor aprilTagProcessor
-//            , int width, int height
+    private VisionPortal buildVisionPortal(CameraName camera, AprilTagProcessor aprilTagProcessor, VisionPortal.StreamFormat streamFormat
+            , int width, int height
     ) {
         VisionPortal.Builder VPBuilder = new VisionPortal.Builder()
 
                 .setCamera(camera)
                 .addProcessors(aprilTagProcessor)
-//                .setCameraResolution(new Size(width, height))
+                .setCameraResolution(new Size(width, height))
+                .setStreamFormat(streamFormat)
                 ;
 
         return VPBuilder.build();
