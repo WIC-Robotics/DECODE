@@ -15,7 +15,6 @@ public class Cortex extends OpMode {
     Midbrain midbrain = null;
     ConfMgr confMgr;
 
-    private boolean notStarted = true;
     Gamepad gpGamepad;
     private ControlScheme controlScheme;
 
@@ -35,12 +34,13 @@ public class Cortex extends OpMode {
     }
 
     @Override
-    public void loop() {
-        if(notStarted){
-            this.midbrain.start();
-            notStarted = false;
-        }
+    public void start() {
+        super.start();
+        this.midbrain.start();
+    }
 
+    @Override
+    public void loop() {
         controlScheme.control(gpGamepad, midbrain, confMgr);
 
 

@@ -46,7 +46,7 @@ public class AtlasMgr {
                 double dTheta = targetTheta_deg - getCurrentAngle_deg();
 //                System.out.print("AtlasAtlas targetTheta= " + targetTheta_deg + " dTheta= "+ dTheta / 10+" power= "); //TODO undo temp
                 if(Math.abs(dTheta) > EPSILON){
-                    atlasServo.setPower(Range.clip(dTheta / 10, -1, 1));
+                    atlasServo.setPower(Range.clip(dTheta / 5, -1, 1));
 //                    System.out.print(dTheta);
                 }else{
 //                    System.out.print("----");

@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.teamcode.WIC.controlschemes.DefaultControlScheme;
+import org.firstinspires.ftc.teamcode.WIC.util.ConfMgr;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -16,22 +18,26 @@ public class AutonomousNS extends OpMode {
 
     int EPSILON_TIME_MILLIS = 5;
 
-    boolean notStarted = false;
     private long start_time;
 
     @Override
     public void init() {
-        midbrain = new Midbrain(hardwareMap, telemetry);
+        this.midbrain = new Midbrain(hardwareMap, telemetry);
+        this.midbrain.startStreaming();
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        this.midbrain.start();
+        resetRuntime();
+        System.out.println("STARTING AT: " + System.currentTimeMillis());
+        start_time = System.currentTimeMillis();
+        midbrain.toggleIntake();
     }
 
     @Override
     public void loop() {
-        if(notStarted){
-            this.midbrain.start();
-            notStarted = false;
-            start_time = System.currentTimeMillis();
-        }
-
 //        doAtTime(midbrain.drive(1, 0, 0), start_time, EPSILON_TIME_MILLIS);
 //        doAtTime();
 //        doAtTime();
@@ -46,20 +52,35 @@ public class AutonomousNS extends OpMode {
 //        doAtTime();
 //        doAtTime();
 
-        midbrain.aim(5, 0);
+        long currentTimeMillis = System.currentTimeMillis() - start_time;
+        System.out.println(currentTimeMillis);
+        if (currentTimeMillis - 5000 > EPSILON_TIME_MILLIS) {
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+        }
+        if (currentTimeMillis - 8000 > EPSILON_TIME_MILLIS) {
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+        }
+        if (currentTimeMillis - 10000 > EPSILON_TIME_MILLIS) {
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+        }
+        if (currentTimeMillis - 12000 > EPSILON_TIME_MILLIS) {
+            midbrain.drive(.5, 0, 0);
+        }
+        if (currentTimeMillis - 12250 > EPSILON_TIME_MILLIS) {
+            midbrain.drive(0, 0, 0);
+        }
+    }
 
-        if (start_time > 1000) {
-            midbrain.shoot();
-        }
-        if (start_time > 3000) {
-            midbrain.shoot();
-        }
-        if (start_time > 5000) {
-            midbrain.shoot();
-        }
-        if (start_time > 7500) {
-            midbrain.drive(1, 0, 0);
-        }
+    @Override
+    public void stop() {
+        super.stop();
+        midbrain.stop();
     }
 
     private void doAtTime(FutureTask<Midbrain> function, long targetTimeMillis, int epsilonTime) {
