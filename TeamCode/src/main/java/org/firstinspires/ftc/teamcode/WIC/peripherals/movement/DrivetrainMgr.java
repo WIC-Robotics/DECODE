@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.WIC.peripherals.movement;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class DrivetrainMgr {
@@ -39,6 +40,11 @@ public class DrivetrainMgr {
         this.BR = hardwareMap.get(DcMotor.class, "back right");
         this.FL = hardwareMap.get(DcMotor.class, "front left");
         this.FR = hardwareMap.get(DcMotor.class, "front right");
+
+        this.BL.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.BR.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.FL.setDirection(DcMotorSimple.Direction.REVERSE);
+        this.FR.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void stop() {
