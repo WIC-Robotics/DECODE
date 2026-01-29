@@ -11,7 +11,7 @@ public class OutputHandler {
     private static OutputHandler instance = null;
 
     private final Telemetry telemetry;
-    private final Servo rgbIndicator;
+    private Servo rgbIndicator = null;
     static final double COLOR_OFF       = 0.000;
     static final double COLOR_ORANGE    = 0.333;
     static final double COLOR_YELLOW    = 0.388;
@@ -25,7 +25,11 @@ public class OutputHandler {
         instance = this;
         this.telemetry = telemetry;
         // Initialize the servo hardware device
-        this.rgbIndicator = hardwareMap.get(Servo.class, "rgbIndicator");
+        try {
+            this.rgbIndicator = hardwareMap.get(Servo.class, "rgbIndicator");
+        } catch (Exception e) {
+//            throw new RuntimeException(e);
+        }
     }
 
     public static OutputHandler getInstance() {
@@ -66,23 +70,33 @@ public class OutputHandler {
     public void headStatus(CameraMgr.ApriTagStatus apriTagStatus){
         switch (apriTagStatus){
             case APRILTAG_OFF:
-                rgbIndicator.setPosition(COLOR_OFF);
+                if (rgbIndicator != null) {
+                    rgbIndicator.setPosition(COLOR_OFF);
+                }
                 telemetry.addData("AprilTag", "NOT STARTED");
                 break;
             case APRILTAG_NOT_DETECTED:
-                rgbIndicator.setPosition(COLOR_RED);
+                if (rgbIndicator != null) {
+                    rgbIndicator.setPosition(COLOR_RED);
+                }
                 telemetry.addData("AprilTag", "NOT DETECTED");
                 break;
             case APRILTAG_DETECTED_OTHER:
-                rgbIndicator.setPosition(COLOR_YELLOW);
+                if (rgbIndicator != null) {
+                    rgbIndicator.setPosition(COLOR_YELLOW);
+                }
                 telemetry.addData("AprilTag", "DETECTED OTHER");
                 break;
             case APRILTAG_DETECTED_TARGET:
-                rgbIndicator.setPosition(COLOR_BLUE);
+                if (rgbIndicator != null) {
+                    rgbIndicator.setPosition(COLOR_BLUE);
+                }
                 telemetry.addData("AprilTag", "DETECTED TARGET");
                 break;
             case APRILTAG_FIXED:
-                rgbIndicator.setPosition(COLOR_GREEN);
+                if (rgbIndicator != null) {
+                    rgbIndicator.setPosition(COLOR_GREEN);
+                }
                 telemetry.addData("AprilTag", "FIXED");
                 break;
             default:

@@ -52,13 +52,12 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         this.startTime = System.currentTimeMillis();
         //keep the output handler at the top of constructor
 //        this.telemetry = telemetry;
-        this.outputHandler = new OutputHandler(telemetry, hardwareMap);
-
         ConfMgr confMgr = ConfMgr.getInstance();
 
         this.throwErrors = confMgr.getBoolean(this, "throwErrors");
 
         try {
+            this.outputHandler = new OutputHandler(telemetry, hardwareMap);
             outputHandler.headStatus(CameraMgr.ApriTagStatus.APRILTAG_OFF);
             this.cameraMgr = new CameraMgr(this.hardwareMap, this);
         } catch (Exception e) {
