@@ -23,7 +23,7 @@ public class CameraMgr {
 
     VisionPortal visionPortal;
     AprilTagProcessor aprilTagProcessor;
-    public static enum ApriTagStatus {APRILTAG_OFF, APRILTAG_NOT_DETECTED, APRILTAG_DETECTED_OTHER, APRILTAG_DETECTED_TARGET, APRILTAG_FIXED};
+    public static enum AprilTagStatus {APRILTAG_OFF, APRILTAG_NOT_DETECTED, APRILTAG_DETECTED_OTHER, APRILTAG_DETECTED_TARGET, APRILTAG_FIXED};
 
     private final String WEBCAM_NAME = "Webcam 1";
     CameraName CAMERA;
@@ -116,7 +116,7 @@ public class CameraMgr {
     public void stop() {
         cameraThread.stopThread();
         visionPortal.stopStreaming();
-        OutputHandler.getInstance().headStatus(CameraMgr.ApriTagStatus.APRILTAG_OFF);
+        OutputHandler.getInstance().headStatus(CameraMgr.AprilTagStatus.APRILTAG_OFF);
     }
 
     private class CameraThread extends Thread {
@@ -127,7 +127,7 @@ public class CameraMgr {
             System.out.println("Starting Camera Thread");
             super.start();
             System.out.println("Camera Thread Started");
-            OutputHandler.getInstance().headStatus(ApriTagStatus.APRILTAG_NOT_DETECTED);
+            OutputHandler.getInstance().headStatus(AprilTagStatus.APRILTAG_NOT_DETECTED);
         }
 
         @Override

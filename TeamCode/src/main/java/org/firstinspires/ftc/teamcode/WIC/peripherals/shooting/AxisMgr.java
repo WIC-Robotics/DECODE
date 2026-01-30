@@ -77,7 +77,7 @@ public class AxisMgr {
                 )){
                     axisDcMotor.setTargetPosition(headAngleRadiansToMotorEncoderTicks(targetTheta));
                 } else{
-                    OutputHandler.getInstance().headStatus(CameraMgr.ApriTagStatus.APRILTAG_FIXED);
+                    OutputHandler.getInstance().headStatus(CameraMgr.AprilTagStatus.APRILTAG_FIXED);
                 }
                 Thread.yield();
             }

@@ -58,7 +58,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 
         try {
             this.outputHandler = new OutputHandler(telemetry, hardwareMap);
-            outputHandler.headStatus(CameraMgr.ApriTagStatus.APRILTAG_OFF);
+            outputHandler.headStatus(CameraMgr.AprilTagStatus.APRILTAG_OFF);
             this.cameraMgr = new CameraMgr(this.hardwareMap, this);
         } catch (Exception e) {
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.WARN, "can't create Camera Manager");
@@ -109,7 +109,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     public void aprilTagDetectionsFound(ArrayList<AprilTagDetection> aprilTagDetections) {
 
         if (aprilTagDetections == null) {
-            outputHandler.headStatus(CameraMgr.ApriTagStatus.APRILTAG_NOT_DETECTED);
+            outputHandler.headStatus(CameraMgr.AprilTagStatus.APRILTAG_NOT_DETECTED);
             outputHandler.clearAll();
             outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.TEXT, "NO DETECTIONS at "+ (System.currentTimeMillis() - startTime)/1000 );
             return;
@@ -148,7 +148,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 //        }
 
         AprilTagDetection desiredAprilTag = null;
-        CameraMgr.ApriTagStatus highestApriTagStatus = CameraMgr.ApriTagStatus.APRILTAG_DETECTED_OTHER;
+        CameraMgr.AprilTagStatus highestApriTagStatus = CameraMgr.AprilTagStatus.APRILTAG_DETECTED_OTHER;
 
         for (AprilTagDetection detection : aprilTagDetections) {
             int detectionId = detection.id;
@@ -157,7 +157,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
                 case 24: //red
                     if (detectionId == desiredAprilTagID) {
                         desiredAprilTag = detection;
-                        highestApriTagStatus = CameraMgr.ApriTagStatus.APRILTAG_DETECTED_TARGET;
+                        highestApriTagStatus = CameraMgr.AprilTagStatus.APRILTAG_DETECTED_TARGET;
                         break;
                     }
                     break;

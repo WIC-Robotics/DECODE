@@ -67,7 +67,7 @@ public class OutputHandler {
         telemetry.clearAll();
     }
 
-    public void headStatus(CameraMgr.ApriTagStatus apriTagStatus){
+    public void headStatus(CameraMgr.AprilTagStatus apriTagStatus){
         switch (apriTagStatus){
             case APRILTAG_OFF:
                 if (rgbIndicator != null) {
