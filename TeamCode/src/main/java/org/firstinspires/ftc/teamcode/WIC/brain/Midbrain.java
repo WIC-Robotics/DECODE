@@ -147,7 +147,9 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
 //        }
 
         AprilTagDetection desiredAprilTag = null;
-        CameraMgr.AprilTagStatus highestApriTagStatus = CameraMgr.AprilTagStatus.APRILTAG_DETECTED_OTHER;
+        CameraMgr.AprilTagStatus highestApriTagStatus = aprilTagDetections.isEmpty() ?
+                CameraMgr.AprilTagStatus.APRILTAG_NOT_DETECTED:
+                CameraMgr.AprilTagStatus.APRILTAG_DETECTED_OTHER;
 
         for (AprilTagDetection detection : aprilTagDetections) {
             int detectionId = detection.id;
