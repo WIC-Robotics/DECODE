@@ -16,7 +16,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 
 import java.util.ArrayList;
-import java.util.concurrent.FutureTask;
 
 /**
  * It is assumed that the distance unit used everywhere is the INCH. If you find anything else,
@@ -351,7 +350,9 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     }
 
     public void drive(double translation, double rotation, double extraRotation) {
-        movementMgr.drive(translation, rotation, extraRotation);
+        if (movementMgr != null) {
+            movementMgr.drive(translation, rotation, extraRotation);
+        }
 //        return new FutureTask<>(this::drive)
     }
 
