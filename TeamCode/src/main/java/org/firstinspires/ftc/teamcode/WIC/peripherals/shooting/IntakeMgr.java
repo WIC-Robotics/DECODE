@@ -32,9 +32,8 @@ public class IntakeMgr {
             indexer.setDirection(DcMotorSimple.Direction.REVERSE);
             indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             indexer.setTargetPosition(0);
-            indexer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            indexer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             indexer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            indexer.setPower(1);
         }
 
         INDEXER_MOTOR_TICKS_PER_REV = ConfMgr.getInstance().getDouble(this, "INDEXER_MOTOR_TICKS_PER_REVOLUTION");
@@ -46,8 +45,23 @@ public class IntakeMgr {
     }
 
     public void advance() {
+        ballIndex = 0;
         if (indexer != null) {
-            indexer.setTargetPosition((int) stage2AngleDegreesToMotorTicks(++ballIndex * INDEXER_STEP_DEG));
+            indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            indexer.setTargetPosition(0);
+            indexer.setDirection(DcMotorSimple.Direction.REVERSE);
+            indexer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            indexer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            indexer.setPower(1);
+            for (int i = 0; i < 100; i++) {
+                indexer.setTargetPosition((int) stage2AngleDegreesToMotorTicks(++ballIndex * INDEXER_STEP_DEG));
+            }
+            indexer.setDirection(DcMotorSimple.Direction.REVERSE);
+            indexer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            indexer.setTargetPosition(0);
+            indexer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            indexer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            indexer.setPower(-1);
         }
     }
 
@@ -55,6 +69,7 @@ public class IntakeMgr {
         if (intake != null) {
             updatePower();
         }
+        indexer.setPower(-1);
     }
 
     public void stop() {
