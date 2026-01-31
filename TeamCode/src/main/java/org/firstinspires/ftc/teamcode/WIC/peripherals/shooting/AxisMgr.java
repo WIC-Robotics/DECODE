@@ -91,7 +91,7 @@ public class AxisMgr {
     /**Accepted heading error in degrees for current distance (from camera lens to April tag).
      * Positive values mean turning counterclockwise.
      * For simplicity, let's start with a fixed (always positive) value now*/
-    private static final double HEAD_ANGLE_EPSILON_RAD = 0.002;
+    private static final double HEAD_ANGLE_EPSILON_RAD = 0.03;
     private double targetTheta;
 
     DcMotor axisDcMotor;
@@ -128,29 +128,6 @@ public class AxisMgr {
     }
 
     public void calibrate(){
-//        calibrating = true;
-//        double v1 = headAngleRadiansToMotorEncoderTicks(100);
-//        System.out.println("AxisAxis calibrate() targeting 100 as " + v1);
-//        turnHeadTo(v1);
-//        while (calibrating) {
-//            System.out.println("AxisAxis going to yield at the left side");
-//            Thread.yield();
-//        }
-//
-//        calibrating = true;
-//        double v2 = headAngleRadiansToMotorEncoderTicks(-100);
-//        System.out.println("AxisAxis calibrate() targeting -100 as " + v2);
-//        turnHeadTo(v2);
-//        while (calibrating) {
-//            System.out.println("AxisAxis going to yield at the right side");
-//            Thread.yield();
-//        }
-//
-//        turnHeadTo(0);
-
-        //calculate the time for each degree to go to the next using different power values.
-        //set values in the ConfMgr to save them.
-
     }
     public double getCurrentHeadPositionRad() {
         return motorEncoderTicksToHeadAngleRadians(axisDcMotor.getCurrentPosition());
