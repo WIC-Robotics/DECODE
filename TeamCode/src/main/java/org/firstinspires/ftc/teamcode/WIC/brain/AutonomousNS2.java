@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import java.util.concurrent.FutureTask;
 
 
-@Autonomous(name = "Autonomous FAR")
-public class AutonomousNS extends OpMode {
+@Autonomous(name = "Autonomous NEAR")
+public class AutonomousNS2 extends OpMode {
     Midbrain midbrain = null;
 
     int EPSILON_TIME_MILLIS = 5;
@@ -25,8 +25,8 @@ public class AutonomousNS extends OpMode {
     public void start() {
         super.start();
         this.midbrain.start();
-        midbrain.speedupTo(2500);
-        midbrain.gazeUpTo_deg(27);
+        midbrain.speedupTo(1000);
+        midbrain.gazeUpTo_deg(15);
         resetRuntime();
         System.out.println("STARTING AT: " + System.currentTimeMillis());
         start_time = System.currentTimeMillis();
@@ -35,30 +35,20 @@ public class AutonomousNS extends OpMode {
 
     @Override
     public void loop() {
-
+        //recede until you see the AprilTag, shoot, shoot, shoot, recede more.
         long currentTimeMillis = System.currentTimeMillis() - start_time;
         System.out.println(currentTimeMillis);
-        if (currentState == 0 && currentTimeMillis - 8e3 > EPSILON_TIME_MILLIS) {
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
+        if (currentState == 0 && currentTimeMillis - 1.e3 > EPSILON_TIME_MILLIS) {
+            midbrain.drive(-1., 0, 0);
             currentState++;
             return;
         }
-        if (currentState == 1 && currentTimeMillis - 10e3 > EPSILON_TIME_MILLIS) {
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
+        if (currentState == 1 && currentTimeMillis - 3e3 > EPSILON_TIME_MILLIS) {
+            midbrain.drive(0, 0, 0);
             currentState++;
             return;
         }
-        if (currentState == 2 && currentTimeMillis - 12e3 > EPSILON_TIME_MILLIS) {
+        if (currentState == 2 && currentTimeMillis - 11e3 > EPSILON_TIME_MILLIS) {
             midbrain.shoot();
             midbrain.shoot();
             midbrain.shoot();
@@ -69,12 +59,34 @@ public class AutonomousNS extends OpMode {
             currentState++;
             return;
         }
-        if (currentState == 3 && currentTimeMillis - 14e3 > EPSILON_TIME_MILLIS) {
-            midbrain.drive(.5, 0, 0);
+        if (currentState == 2 && currentTimeMillis - 13e3 > EPSILON_TIME_MILLIS) {
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
             currentState++;
             return;
         }
-        if (currentState == 4 && currentTimeMillis - 16e3 > EPSILON_TIME_MILLIS) {
+        if (currentState == 2 && currentTimeMillis - 15e3 > EPSILON_TIME_MILLIS) {
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+            midbrain.shoot();
+            currentState++;
+            return;
+        }
+        if (currentState == 3 && currentTimeMillis - 17.e3 > EPSILON_TIME_MILLIS) {
+            midbrain.drive(-1., 0, 0);
+            currentState++;
+            return;
+        }
+        if (currentState == 4 && currentTimeMillis - 18.e3 > EPSILON_TIME_MILLIS) {
             midbrain.drive(0, 0, 0);
             currentState++;
             return;
