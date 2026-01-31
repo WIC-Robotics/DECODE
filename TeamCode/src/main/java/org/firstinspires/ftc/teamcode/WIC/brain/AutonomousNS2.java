@@ -39,20 +39,16 @@ public class AutonomousNS2 extends OpMode {
         long currentTimeMillis = System.currentTimeMillis() - start_time;
         System.out.println(currentTimeMillis);
         if (currentState == 0 && currentTimeMillis - 1.e3 > EPSILON_TIME_MILLIS) {
-            midbrain.drive(-1., 0, 0);
+            midbrain.drive(-.5, 0, 0);
             currentState++;
             return;
         }
-        if (currentState == 1 && currentTimeMillis - 3e3 > EPSILON_TIME_MILLIS) {
+        if (currentState == 1 && currentTimeMillis - 2e3 > EPSILON_TIME_MILLIS) {
             midbrain.drive(0, 0, 0);
             currentState++;
             return;
         }
         if (currentState == 2 && currentTimeMillis - 11e3 > EPSILON_TIME_MILLIS) {
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
             midbrain.shoot();
             midbrain.shoot();
             midbrain.shoot();
@@ -62,19 +58,10 @@ public class AutonomousNS2 extends OpMode {
         if (currentState == 2 && currentTimeMillis - 13e3 > EPSILON_TIME_MILLIS) {
             midbrain.shoot();
             midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
             currentState++;
             return;
         }
         if (currentState == 2 && currentTimeMillis - 15e3 > EPSILON_TIME_MILLIS) {
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
             midbrain.shoot();
             midbrain.shoot();
             midbrain.shoot();
@@ -86,7 +73,7 @@ public class AutonomousNS2 extends OpMode {
             currentState++;
             return;
         }
-        if (currentState == 4 && currentTimeMillis - 18.e3 > EPSILON_TIME_MILLIS) {
+        if (currentState == 4 && currentTimeMillis - 18.5e3 > EPSILON_TIME_MILLIS) {
             midbrain.drive(0, 0, 0);
             currentState++;
             return;

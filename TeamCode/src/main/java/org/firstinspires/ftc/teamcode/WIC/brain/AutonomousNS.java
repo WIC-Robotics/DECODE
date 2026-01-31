@@ -25,8 +25,8 @@ public class AutonomousNS extends OpMode {
     public void start() {
         super.start();
         this.midbrain.start();
-        midbrain.speedupTo(2500);
-        midbrain.gazeUpTo_deg(27);
+        midbrain.speedupTo(2700);
+        midbrain.gazeUpTo_deg(29);
         resetRuntime();
         System.out.println("STARTING AT: " + System.currentTimeMillis());
         start_time = System.currentTimeMillis();
@@ -35,14 +35,9 @@ public class AutonomousNS extends OpMode {
 
     @Override
     public void loop() {
-
         long currentTimeMillis = System.currentTimeMillis() - start_time;
         System.out.println(currentTimeMillis);
         if (currentState == 0 && currentTimeMillis - 8e3 > EPSILON_TIME_MILLIS) {
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
             midbrain.shoot();
             midbrain.shoot();
             currentState++;
@@ -51,30 +46,21 @@ public class AutonomousNS extends OpMode {
         if (currentState == 1 && currentTimeMillis - 10e3 > EPSILON_TIME_MILLIS) {
             midbrain.shoot();
             midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
             currentState++;
             return;
         }
         if (currentState == 2 && currentTimeMillis - 12e3 > EPSILON_TIME_MILLIS) {
             midbrain.shoot();
             midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
-            midbrain.shoot();
             currentState++;
             return;
         }
         if (currentState == 3 && currentTimeMillis - 14e3 > EPSILON_TIME_MILLIS) {
-            midbrain.drive(.5, 0, 0);
+            midbrain.drive(1., 0, 0);
             currentState++;
             return;
         }
-        if (currentState == 4 && currentTimeMillis - 16e3 > EPSILON_TIME_MILLIS) {
+        if (currentState == 4 && currentTimeMillis - 15e3 > EPSILON_TIME_MILLIS) {
             midbrain.drive(0, 0, 0);
             currentState++;
             return;

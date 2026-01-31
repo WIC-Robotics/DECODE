@@ -44,6 +44,7 @@ public class CameraMgr {
         CAMERA = hardwareMap.get(WebcamName.class, WEBCAM_NAME);
         this.visionPortal = buildVisionPortal(CAMERA, this.aprilTagProcessor, VisionPortal.StreamFormat.MJPEG
                 , 1280, 720
+//                , 640, 480
         );
 //        this.visionPortal = buildVisionPortal(BuiltinCameraDirection.BACK, this.aprilTagProcessor); // Use if phone camera
 
