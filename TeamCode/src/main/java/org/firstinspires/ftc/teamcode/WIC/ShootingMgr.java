@@ -94,7 +94,7 @@ public class ShootingMgr {
         axisMgr.turnHeadBy(dTheta);
     }
 
-    public void aim(double r, double theta) {
+    public void autoAim(double r, double theta) {
         if (axisMgr != null) {
             axisMgr.turnHeadTo(theta);
         }
@@ -122,6 +122,20 @@ public class ShootingMgr {
         //    ret |= NEED_TO_MOVE_CLOSER;
         // else if too close to shoot
         //    ret |= NEED_TO_MOVE_FURTHER;
+    }
+
+    public void aim(int flywheel, double atlas, double axis) {
+        if (axisMgr != null) {
+            axisMgr.turnHeadTo(axis);
+        }
+
+        if (atlasMgr != null) {
+            atlasMgr.gazeUpTo_deg(atlas);
+        }
+
+        if (wheelMgr != null) {
+            wheelMgr.speedupTo((int) flywheel);
+        }
     }
 
     public void shoot() {

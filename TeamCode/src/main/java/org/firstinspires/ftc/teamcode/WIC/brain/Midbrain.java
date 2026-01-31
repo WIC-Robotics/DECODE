@@ -228,7 +228,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         if (ConfMgr.isDemo()){
             long newAngle = (((System.currentTimeMillis() - startTime)/10000) % 4) *10;
             if(newAngle != lastTargetAngleAtlas) {
-                shootingMgr.aim(newAngle, targetTheta);
+                shootingMgr.autoAim(newAngle, targetTheta);
                 lastTargetAngleAtlas = newAngle;
             }
         } else {
@@ -236,14 +236,14 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
             System.out.printf("AprilTag yaw= %f\tbearing= %f\tangleA= %f\ttargetTheta= %f\n",
                     Math.toDegrees(yaw), Math.toDegrees(bearing),Math.toDegrees(angleA) ,Math.toDegrees(targetTheta));
 //            shootingMgr.aim(distToTarget, targetTheta);
-            shootingMgr.aim(-1, targetTheta); //temp
+            shootingMgr.autoAim(-1, targetTheta); //temp
         }
     }
 
     @Override
     public void cannotTurnLeft() {
         if (calibratingAxis) {
-            shootingMgr.aim(-1, -100);
+            shootingMgr.autoAim(-1, -179);
             return;
         }
         outputHandler.writeToTelemetry(OutputHandler.MSG_LEVEL.TEXT, "Couldn't turn left");
@@ -254,7 +254,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     @Override
     public void cannotTurnRight() {
         if (calibratingAxis) {
-            shootingMgr.aim(-1, 0);
+            shootingMgr.autoAim(-1, 0);
             calibratingAxis = false;
             return;
         }
@@ -329,7 +329,7 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
     public void initAxisCalibration() {
         calibratingAxis = true;
         if (shootingMgr != null) {
-            shootingMgr.aim(-1, Math.toRadians(60));
+            shootingMgr.autoAim(-1, Math.toRadians(70));
         }
     }
 
@@ -378,8 +378,12 @@ public class Midbrain implements AprilTagDetectionListener, HeadExceptionHandler
         this.autoAim = autoAim;
     }
 
-    public void aim(double r, double theta) {
-        shootingMgr.aim(r, theta);
+    public void autoAim(double r, double theta) {
+        shootingMgr.autoAim(r, theta);
+    }
+
+    public void aim(int flywheel, double atlas, double axis) {
+        shootingMgr.aim(flywheel, atlas, axis);
     }
 
     public void speedUpTo(int RPM) {
