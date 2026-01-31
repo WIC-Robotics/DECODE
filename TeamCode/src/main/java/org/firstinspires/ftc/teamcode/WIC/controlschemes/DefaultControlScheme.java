@@ -77,7 +77,7 @@ public abstract class DefaultControlScheme extends ControlScheme implements TwoH
             intakeNotAlreadyPressed = true;
         }
 
-        double axisOffset = Math.toRadians(1);
+        double axisOffset = Math.toRadians(15);
         if (gamepad.left_bumper) {
             midbrain.turnHeadBy(axisOffset);
         } else if (gamepad.right_bumper) {
